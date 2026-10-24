@@ -20,6 +20,7 @@ from ..common.exceptions import (
     JobCancelledError,
 )
 from ..codecs.registry import CodecRegistry
+from ..engine.filters import invert_filter
 from ..integrity.hasher import Hasher
 from ..integrity.verifier import IntegrityVerifier, SafeFileWriter
 from .format import (
@@ -145,6 +146,8 @@ class ArchiveReader:
                     # Decompress and verify
                     codec = CodecRegistry.get(meta.codec_id)
                     decomp = codec.decompress(comp_data, meta.uncompressed_size)
+                    if meta.filter_id != 0:
+                        decomp = invert_filter(decomp, meta.filter_id)
                     if len(decomp) != meta.uncompressed_size:
                         raise CorruptArchiveError(f"Decompressed size mismatch on block {b_id}")
 
@@ -222,6 +225,8 @@ class ArchiveReader:
 
                         codec = CodecRegistry.get(meta.codec_id)
                         decomp = codec.decompress(comp_data, meta.uncompressed_size)
+                        if meta.filter_id != 0:
+                            decomp = invert_filter(decomp, meta.filter_id)
 
                         if not IntegrityVerifier.verify_block_digest(decomp, meta.digest):
                             raise ChecksumMismatchError(f"Block digest mismatch on block {b_id}")

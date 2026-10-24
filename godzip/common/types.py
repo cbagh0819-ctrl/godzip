@@ -13,6 +13,7 @@ class BlockMetadata:
     offset: int
     digest: bytes             # 32 bytes (BLAKE3 or SHA-256)
     crc32: int
+    filter_id: int = 0        # Pre-filter transformation ID (e.g. delta, channel, BCJ)
 
 @dataclass
 class FileEntry:

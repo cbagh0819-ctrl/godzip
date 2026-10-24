@@ -55,7 +55,7 @@ def run_adaptive_search_experiment():
 
         # 2. Adaptive Search
         t1 = time.perf_counter()
-        chosen_cid, chosen_lvl, comp_data = AdaptiveSearchEngine.choose_codec(data, profile, CompressionMode.BALANCED)
+        chosen_cid, chosen_lvl, chosen_fid, comp_data = AdaptiveSearchEngine.choose_codec(data, profile, CompressionMode.BALANCED)
         adaptive_time = time.perf_counter() - t1
         chosen_codec_name = f"{CodecRegistry.get(chosen_cid).name}-{chosen_lvl}"
         chosen_size = len(comp_data)

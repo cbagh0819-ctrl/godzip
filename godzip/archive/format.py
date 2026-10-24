@@ -62,7 +62,7 @@ def serialize_block_table(blocks: List[BlockMetadata]) -> bytes:
             b.block_id,
             b.codec_id,
             b.codec_param,
-            0, # reserved
+            b.filter_id,
             b.uncompressed_size,
             b.compressed_size,
             b.offset,
@@ -84,11 +84,12 @@ def deserialize_block_table(data: bytes) -> List[BlockMetadata]:
     blocks = []
     offset = 4
     for _ in range(num_blocks):
-        b_id, c_id, c_param, _, u_size, c_size, f_offset, digest, crc = BLOCK_ENTRY_STRUCT.unpack_from(data, offset)
+        b_id, c_id, c_param, f_id, u_size, c_size, f_offset, digest, crc = BLOCK_ENTRY_STRUCT.unpack_from(data, offset)
         blocks.append(BlockMetadata(
             block_id=b_id,
             codec_id=c_id,
             codec_param=c_param,
+            filter_id=f_id,
             uncompressed_size=u_size,
             compressed_size=c_size,
             offset=f_offset,

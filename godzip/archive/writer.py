@@ -132,7 +132,7 @@ class ArchiveWriter:
                         else:
                             # Compress new block
                             profile = ContentAnalyzer.analyze(chunk)
-                            cid, cparam, comp_data = AdaptiveSearchEngine.choose_codec(chunk, profile, self.mode)
+                            cid, cparam, fid, comp_data = AdaptiveSearchEngine.choose_codec(chunk, profile, self.mode)
                             comp_len = len(comp_data)
                             offset = out_fp.tell()
                             crc = zlib.crc32(comp_data) & 0xFFFFFFFF
@@ -145,6 +145,7 @@ class ArchiveWriter:
                                 block_id=next_block_id,
                                 codec_id=cid,
                                 codec_param=cparam,
+                                filter_id=fid,
                                 uncompressed_size=chunk_len,
                                 compressed_size=comp_len,
                                 offset=offset,
