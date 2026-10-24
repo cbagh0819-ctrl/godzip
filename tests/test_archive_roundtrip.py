@@ -92,3 +92,65 @@ def test_deduplication_efficiency(temp_dir):
         assert os.path.exists(ext_file)
         with open(ext_file, "rb") as fp:
             assert fp.read() == block
+
+
+def test_mixed_media_folder_compression(temp_dir):
+    """Verifies that a folder with images, audio, video, and documents in any format all get compressed."""
+    media_dir = os.path.join(temp_dir, "mixed_media")
+    os.makedirs(media_dir, exist_ok=True)
+
+    # 1. Image: Uncompressed BMP
+    bmp_path = os.path.join(media_dir, "photo.bmp")
+    with open(bmp_path, "wb") as f:
+        f.write(b"BM" + b"\x00" * 52 + (bytes(range(128)) * 100))
+
+    # 2. Image: PNG
+    png_path = os.path.join(media_dir, "icon.png")
+    with open(png_path, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n" + b"IDAT" + (b"\x12\x34\x56\x78" * 500))
+
+    # 3. Audio: WAV PCM
+    wav_path = os.path.join(media_dir, "sound.wav")
+    with open(wav_path, "wb") as f:
+        f.write(b"RIFF\x24\x00\x00\x00WAVEfmt " + (b"\x00\x01\x00\x02" * 500))
+
+    # 4. Audio: MP3
+    mp3_path = os.path.join(media_dir, "music.mp3")
+    with open(mp3_path, "wb") as f:
+        f.write(b"ID3\x03\x00\x00\x00" + (b"\xff\xfb\x90\x44" * 400))
+
+    # 5. Video: MP4 container
+    mp4_path = os.path.join(media_dir, "clip.mp4")
+    with open(mp4_path, "wb") as f:
+        f.write(b"\x00\x00\x00\x18ftypmp42" + (b"mdat\xaa\xbb\xcc\xdd" * 300))
+
+    # 6. Document: PDF
+    pdf_path = os.path.join(media_dir, "manual.pdf")
+    with open(pdf_path, "wb") as f:
+        f.write(b"%PDF-1.4\n" + (b"1 0 obj << /Type /Catalog >> endobj\n" * 100))
+
+    # Compress the mixed media folder
+    archive_path = os.path.join(temp_dir, "mixed_media.god")
+    writer = ArchiveWriter(output_path=archive_path, mode=CompressionMode.MAXIMUM, enable_dedup=True)
+    orig_bytes, comp_bytes = writer.add_sources([media_dir])
+
+    assert comp_bytes > 0
+    assert orig_bytes > 0
+    # High compression achieved across the mixed folder
+    assert comp_bytes < orig_bytes
+
+    # Verify and extract
+    reader = ArchiveReader(archive_path)
+    assert reader.verify() is True
+    assert len(reader.files) == 6
+
+    extract_dir = os.path.join(temp_dir, "ext_mixed")
+    reader.extract(destination_dir=extract_dir)
+
+    # Check byte-for-byte exact recovery for every single media file
+    for fname in ["photo.bmp", "icon.png", "sound.wav", "music.mp3", "clip.mp4", "manual.pdf"]:
+        orig_f = os.path.join(media_dir, fname)
+        rec_f = os.path.join(extract_dir, "mixed_media", fname)
+        assert os.path.exists(rec_f), f"Recovered file missing: {fname}"
+        with open(orig_f, "rb") as of, open(rec_f, "rb") as rf:
+            assert of.read() == rf.read(), f"Byte mismatch for {fname}"

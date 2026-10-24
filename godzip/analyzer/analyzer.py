@@ -3,7 +3,16 @@
 import math
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
-from .signatures import detect_signature, is_likely_precompressed
+from .signatures import (
+    detect_file_format,
+    is_likely_precompressed,
+    CATEGORY_IMAGE,
+    CATEGORY_VIDEO,
+    CATEGORY_AUDIO,
+    CATEGORY_DOCUMENT,
+    CATEGORY_ARCHIVE,
+    CATEGORY_EXECUTABLE,
+)
 
 
 @dataclass
@@ -13,12 +22,13 @@ class ContentProfile:
     zero_ratio: float             # Fraction of zero (0x00) bytes
     unique_byte_count: int        # Number of unique byte values (1 to 256)
     detected_format: str          # Detected magic file format or 'unknown'
-    likely_precompressed: bool    # True if known compressed format or near-maximum entropy
-    recommended_class: str        # 'TEXT', 'BINARY_STRUCTURED', 'REPETITIVE', 'RANDOM', 'PRECOMPRESSED'
+    detected_category: str        # 'image', 'video', 'audio', 'document', 'archive', etc.
+    likely_precompressed: bool    # True if typically compressed container
+    recommended_class: str        # 'TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'BINARY_STRUCTURED', 'REPETITIVE', 'RANDOM', 'ARCHIVE'
 
 
 class ContentAnalyzer:
-    """Analyzes data characteristics to guide adaptive codec selection."""
+    """Analyzes data characteristics to guide adaptive codec selection across all file formats."""
 
     @staticmethod
     def analyze(data: bytes, sample_limit: int = 131072) -> ContentProfile:
@@ -30,6 +40,7 @@ class ContentAnalyzer:
                 zero_ratio=0.0,
                 unique_byte_count=0,
                 detected_format="empty",
+                detected_category="data",
                 likely_precompressed=False,
                 recommended_class="REPETITIVE"
             )
@@ -60,18 +71,24 @@ class ContentAnalyzer:
         zero_ratio = zero_count / n
         unique_bytes = len(freq)
 
-        detected_fmt = detect_signature(data) or "unknown"
-        is_precompressed = is_likely_precompressed(data)
+        detected_fmt, detected_cat = detect_file_format(data)
+        is_precomp = is_likely_precompressed(data)
 
-        # Classify data
-        if is_precompressed or (entropy > 7.96 and unique_bytes >= 250):
-            recommended_class = "PRECOMPRESSED"
-        elif entropy > 7.92 and ascii_ratio < 0.15:
-            recommended_class = "RANDOM"
+        # Classify data into actionable class
+        if detected_cat == CATEGORY_IMAGE:
+            recommended_class = "IMAGE"
+        elif detected_cat == CATEGORY_VIDEO:
+            recommended_class = "VIDEO"
+        elif detected_cat == CATEGORY_AUDIO:
+            recommended_class = "AUDIO"
+        elif detected_cat == CATEGORY_ARCHIVE:
+            recommended_class = "ARCHIVE"
+        elif zero_ratio > 0.35 or entropy < 3.5:
+            recommended_class = "REPETITIVE"
         elif ascii_ratio > 0.82:
             recommended_class = "TEXT"
-        elif zero_ratio > 0.35 or entropy < 4.0:
-            recommended_class = "REPETITIVE"
+        elif entropy > 7.95 and ascii_ratio < 0.10:
+            recommended_class = "RANDOM"
         else:
             recommended_class = "BINARY_STRUCTURED"
 
@@ -81,6 +98,7 @@ class ContentAnalyzer:
             zero_ratio=round(zero_ratio, 4),
             unique_byte_count=unique_bytes,
             detected_format=detected_fmt,
-            likely_precompressed=is_precompressed or recommended_class in ("PRECOMPRESSED", "RANDOM"),
+            detected_category=detected_cat,
+            likely_precompressed=is_precomp or (entropy > 7.95 and unique_bytes >= 250),
             recommended_class=recommended_class
         )

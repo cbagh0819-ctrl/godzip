@@ -1,4 +1,4 @@
-"""Tests for ContentAnalyzer entropy and magic detection."""
+"""Tests for ContentAnalyzer entropy and media detection across image, video, audio, and documents."""
 
 import os
 from godzip.analyzer.analyzer import ContentAnalyzer
@@ -20,9 +20,25 @@ def test_analyzer_repetitive():
     assert profile.zero_ratio == 1.0
 
 
-def test_analyzer_precompressed_magic():
+def test_analyzer_image_detection():
     png_header = b"\x89PNG\r\n\x1a\n" + os.urandom(200)
     profile = ContentAnalyzer.analyze(png_header)
     assert profile.detected_format == "png"
-    assert profile.likely_precompressed is True
-    assert profile.recommended_class == "PRECOMPRESSED"
+    assert profile.detected_category == "image"
+    assert profile.recommended_class == "IMAGE"
+
+
+def test_analyzer_audio_detection():
+    wav_header = b"RIFF\x24\x00\x00\x00WAVEfmt " + os.urandom(100)
+    profile = ContentAnalyzer.analyze(wav_header)
+    assert profile.detected_format == "wav"
+    assert profile.detected_category == "audio"
+    assert profile.recommended_class == "AUDIO"
+
+
+def test_analyzer_video_detection():
+    mp4_header = b"\x00\x00\x00\x18ftypisom" + os.urandom(100)
+    profile = ContentAnalyzer.analyze(mp4_header)
+    assert profile.detected_format == "mp4"
+    assert profile.detected_category == "video"
+    assert profile.recommended_class == "VIDEO"

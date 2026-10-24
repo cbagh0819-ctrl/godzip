@@ -1,4 +1,4 @@
-"""GODZIP Adaptive Search: Intelligent candidate selection and trial evaluation."""
+"""GODZIP Adaptive Search: Universal lossless compression across all media and file formats."""
 
 from typing import List, Tuple
 from ..common.constants import (
@@ -16,62 +16,106 @@ from ..analyzer.analyzer import ContentProfile
 
 
 class AdaptiveSearchEngine:
-    """Evaluates data profiles and empirically selects the most compact lossless codec."""
+    """Evaluates data profiles and empirically selects the most compact lossless codec.
+    
+    Guarantees that files in ANY format (images, audio, video, documents, code, binaries)
+    are actively tested for compression, falling back to STORE only if compression would expand the data.
+    """
 
     @staticmethod
     def get_candidate_configurations(profile: ContentProfile, mode: CompressionMode) -> List[Tuple[int, int]]:
         """Returns list of (codec_id, level) to test based on content profile and mode."""
-        # If precompressed or high entropy random binary, always prefer STORE or fast Zstd-1
-        if profile.likely_precompressed or profile.recommended_class in ("PRECOMPRESSED", "RANDOM"):
-            if mode == CompressionMode.FAST:
-                return [(CODEC_ID_STORE, 0)]
-            elif mode == CompressionMode.BALANCED:
-                return [(CODEC_ID_STORE, 0), (CODEC_ID_ZSTD, 1)]
-            else:
-                return [(CODEC_ID_STORE, 0), (CODEC_ID_ZSTD, 1), (CODEC_ID_LZ4, 0)]
+        rec = profile.recommended_class
 
         if mode == CompressionMode.FAST:
-            if profile.recommended_class == "REPETITIVE":
-                return [(CODEC_ID_LZ4, 0)]
-            return [(CODEC_ID_ZSTD, 3)]
+            if rec == "REPETITIVE":
+                return [(CODEC_ID_LZ4, 0), (CODEC_ID_ZSTD, 3)]
+            elif rec in ("IMAGE", "AUDIO", "VIDEO"):
+                return [(CODEC_ID_ZSTD, 3), (CODEC_ID_LZ4, 0)]
+            elif rec == "TEXT":
+                return [(CODEC_ID_ZSTD, 3)]
+            else:
+                return [(CODEC_ID_ZSTD, 3), (CODEC_ID_LZ4, 0)]
 
         elif mode == CompressionMode.BALANCED:
-            if profile.recommended_class == "TEXT":
-                return [(CODEC_ID_ZSTD, 6), (CODEC_ID_BROTLI, 6)]
-            elif profile.recommended_class == "REPETITIVE":
-                return [(CODEC_ID_LZ4, 3), (CODEC_ID_ZSTD, 3)]
+            if rec == "IMAGE":
+                # Images: test Zstandard, LZMA2, and Brotli
+                return [
+                    (CODEC_ID_ZSTD, 9),
+                    (CODEC_ID_LZMA2, 6),
+                    (CODEC_ID_BROTLI, 6),
+                ]
+            elif rec == "AUDIO":
+                # Audio: PCM/WAV/AIFF compress well with LZMA2/Zstd
+                return [
+                    (CODEC_ID_ZSTD, 9),
+                    (CODEC_ID_LZMA2, 6),
+                    (CODEC_ID_DEFLATE, 9),
+                ]
+            elif rec == "VIDEO":
+                # Video containers: Zstd-9 & LZMA2-6 for frames & metadata
+                return [
+                    (CODEC_ID_ZSTD, 9),
+                    (CODEC_ID_LZMA2, 6),
+                ]
+            elif rec == "TEXT":
+                return [
+                    (CODEC_ID_ZSTD, 6),
+                    (CODEC_ID_BROTLI, 6),
+                    (CODEC_ID_LZMA2, 6),
+                ]
+            elif rec == "REPETITIVE":
+                return [
+                    (CODEC_ID_LZ4, 3),
+                    (CODEC_ID_ZSTD, 6),
+                    (CODEC_ID_LZMA2, 6),
+                ]
             else:
-                return [(CODEC_ID_ZSTD, 9), (CODEC_ID_LZMA2, 4)]
+                return [
+                    (CODEC_ID_ZSTD, 9),
+                    (CODEC_ID_LZMA2, 6),
+                    (CODEC_ID_LZ4, 0),
+                ]
 
         elif mode == CompressionMode.MAXIMUM:
-            # In MAXIMUM mode, comprehensively test top contenders
-            if profile.recommended_class == "TEXT":
+            # In MAXIMUM mode, comprehensively test top high-ratio contenders
+            # across ALL formats: images, videos, audio, text, binaries
+            if rec in ("IMAGE", "AUDIO", "VIDEO", "BINARY_STRUCTURED", "ARCHIVE", "RANDOM"):
                 return [
-                    (CODEC_ID_ZSTD, 19),
+                    (CODEC_ID_ZSTD, 22),
                     (CODEC_ID_LZMA2, 9),
                     (CODEC_ID_BROTLI, 11),
                     (CODEC_ID_DEFLATE, 9),
                 ]
-            elif profile.recommended_class == "REPETITIVE":
+            elif rec == "TEXT":
+                return [
+                    (CODEC_ID_ZSTD, 22),
+                    (CODEC_ID_LZMA2, 9),
+                    (CODEC_ID_BROTLI, 11),
+                    (CODEC_ID_DEFLATE, 9),
+                ]
+            elif rec == "REPETITIVE":
                 return [
                     (CODEC_ID_LZMA2, 9),
-                    (CODEC_ID_ZSTD, 19),
+                    (CODEC_ID_ZSTD, 22),
                     (CODEC_ID_LZ4, 9),
+                    (CODEC_ID_BROTLI, 11),
                 ]
             else:
                 return [
-                    (CODEC_ID_ZSTD, 19),
+                    (CODEC_ID_ZSTD, 22),
                     (CODEC_ID_LZMA2, 9),
+                    (CODEC_ID_BROTLI, 11),
                     (CODEC_ID_DEFLATE, 9),
                 ]
 
         elif mode == CompressionMode.RESEARCH:
             candidates = [
-                (CODEC_ID_ZSTD, 19),
+                (CODEC_ID_ZSTD, 22),
                 (CODEC_ID_LZMA2, 9),
                 (CODEC_ID_BROTLI, 11),
             ]
-            if profile.recommended_class in ("TEXT", "BINARY_STRUCTURED"):
+            if rec in ("TEXT", "BINARY_STRUCTURED", "AUDIO", "IMAGE"):
                 candidates.append((CODEC_ID_NEURAL_CONTEXT, 1))
             return candidates
 
@@ -81,48 +125,47 @@ class AdaptiveSearchEngine:
     def choose_codec(cls, chunk: bytes, profile: ContentProfile, mode: CompressionMode) -> Tuple[int, int, bytes]:
         """Tests candidate codecs and returns (best_codec_id, best_level, compressed_payload).
         
-        Guarantees that if no candidate compresses data smaller than raw size,
-        returns (CODEC_ID_STORE, 0, chunk).
+        Guarantees:
+        1. Actively tests compression on all file formats (images, audio, video, text, binary).
+        2. Validates exact byte restoration on candidate output.
+        3. If no codec compresses the data smaller than original size, falls back to STORE (zero expansion).
         """
         raw_size = len(chunk)
         if raw_size == 0:
             return CODEC_ID_STORE, 0, b""
 
-        # In FAST mode, immediately compress with single chosen candidate
-        if mode == CompressionMode.FAST:
-            candidates = cls.get_candidate_configurations(profile, mode)
-            cid, lvl = candidates[0]
-            if cid == CODEC_ID_STORE:
-                return CODEC_ID_STORE, 0, chunk
-            codec = CodecRegistry.get(cid)
-            try:
-                compressed = codec.compress(chunk, lvl)
-                if len(compressed) < raw_size:
-                    return cid, lvl, compressed
-            except Exception:
-                pass
-            return CODEC_ID_STORE, 0, chunk
-
         candidates = cls.get_candidate_configurations(profile, mode)
+
         best_size = raw_size
         best_choice = (CODEC_ID_STORE, 0, chunk)
 
-        # In MAXIMUM / BALANCED mode, evaluate candidates
+        # In FAST mode, test first candidate quickly
+        if mode == CompressionMode.FAST:
+            for cid, lvl in candidates:
+                try:
+                    codec = CodecRegistry.get(cid)
+                    comp = codec.compress(chunk, lvl)
+                    if len(comp) < best_size:
+                        decomp = codec.decompress(comp, raw_size)
+                        if decomp == chunk:
+                            return cid, lvl, comp
+                except Exception:
+                    continue
+            return CODEC_ID_STORE, 0, chunk
+
+        # In BALANCED, MAXIMUM, or RESEARCH mode, evaluate candidates and pick smallest
         for cid, lvl in candidates:
-            if cid == CODEC_ID_STORE:
-                continue
             try:
                 codec = CodecRegistry.get(cid)
                 compressed = codec.compress(chunk, lvl)
-                # Verify exact round-trip integrity on candidate
-                decompressed = codec.decompress(compressed, raw_size)
-                if decompressed != chunk:
-                    continue # Discard if not byte-exact!
                 
-                # Check if it strictly beats current best
+                # Only check if strictly smaller than current best
                 if len(compressed) < best_size:
-                    best_size = len(compressed)
-                    best_choice = (cid, lvl, compressed)
+                    # Verify exact round-trip integrity on candidate
+                    decompressed = codec.decompress(compressed, raw_size)
+                    if decompressed == chunk:
+                        best_size = len(compressed)
+                        best_choice = (cid, lvl, compressed)
             except Exception:
                 continue
 
