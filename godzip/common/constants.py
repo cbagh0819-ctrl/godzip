@@ -1,0 +1,46 @@
+"""Core constants and definitions for GODZIP."""
+
+import enum
+
+MAGIC_HEADER = b"GODZIP\x01\x00"
+MAGIC_TRAILER = b"GEND"
+FORMAT_VERSION = 1
+
+# Header Flags Bitmask
+FLAG_DEDUP_ENABLED = 1 << 0
+FLAG_ADAPTIVE_SEARCH = 1 << 1
+FLAG_ENCRYPTION_RESERVED = 1 << 2
+FLAG_CHECKSUM_BLAKE3 = 1 << 3
+
+# Resource and Security Bounds
+MAX_BLOCK_SIZE = 64 * 1024 * 1024        # 64 MB
+DEFAULT_CHUNK_SIZE = 1 * 1024 * 1024     # 1 MB
+MIN_CHUNK_SIZE = 64 * 1024               # 64 KB
+MAX_FILE_ENTRIES = 1_000_000
+MAX_PATH_LENGTH = 1024
+MAX_EXPANSION_RATIO = 50_000            # Zip-bomb guard
+
+# Codec IDs
+CODEC_ID_STORE = 0x00
+CODEC_ID_ZSTD = 0x01
+CODEC_ID_LZMA2 = 0x02
+CODEC_ID_BROTLI = 0x03
+CODEC_ID_DEFLATE = 0x04
+CODEC_ID_LZ4 = 0x05
+CODEC_ID_NEURAL_CONTEXT = 0x10
+
+CODEC_NAMES = {
+    CODEC_ID_STORE: "STORE",
+    CODEC_ID_ZSTD: "ZSTD",
+    CODEC_ID_LZMA2: "LZMA2",
+    CODEC_ID_BROTLI: "BROTLI",
+    CODEC_ID_DEFLATE: "DEFLATE",
+    CODEC_ID_LZ4: "LZ4",
+    CODEC_ID_NEURAL_CONTEXT: "NEURAL_CONTEXT",
+}
+
+class CompressionMode(enum.Enum):
+    FAST = "fast"
+    BALANCED = "balanced"
+    MAXIMUM = "max"
+    RESEARCH = "research"
