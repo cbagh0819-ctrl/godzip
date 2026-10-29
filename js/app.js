@@ -548,6 +548,11 @@ document.addEventListener("DOMContentLoaded", () => {
     openWorkspaceWithFiles();
   });
 
+  const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const fileInputMobile = document.getElementById("fileInputMobile");
+  const btnSelectFiles = document.getElementById("btnSelectFiles");
+  const btnAddFiles = document.getElementById("btnAddFiles");
+
   const btnSelectFolder = document.getElementById("btnSelectFolder");
   if (btnSelectFolder) {
     btnSelectFolder.addEventListener("click", (e) => {
@@ -557,11 +562,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (btnSelectFiles && fileInputMobile) {
+    btnSelectFiles.addEventListener("click", (e) => {
+      e.stopPropagation();
+      AudioFX.playClick();
+      fileInputMobile.click();
+    });
+  }
+
+  if (btnAddFiles && fileInputMobile) {
+    btnAddFiles.addEventListener("click", (e) => {
+      e.stopPropagation();
+      AudioFX.playClick();
+      fileInputMobile.click();
+    });
+  }
+
+  if (fileInputMobile) {
+    fileInputMobile.addEventListener("click", () => {
+      fileInputMobile.value = "";
+    });
+
+    fileInputMobile.addEventListener("change", (e) => {
+      if (!e.target.files || e.target.files.length === 0) return;
+      const rawFiles = Array.from(e.target.files);
+      const now = new Date();
+      currentFolderName = `Mobile_Package_${now.getHours()}${now.getMinutes()}`;
+      selectedFiles = rawFiles.map(f => {
+        f.relativePath = f.name;
+        return f;
+      });
+      AudioFX.playThunder();
+      openWorkspaceWithFiles();
+    });
+  }
+
   // Clicking anywhere in dropzone triggers file/folder picker
   compressDropzone.addEventListener("click", (e) => {
     if (e.target.closest("button") || e.target.closest("a")) return;
     AudioFX.playClick();
-    folderInput.click();
+    if (isMobileDevice && fileInputMobile) {
+      fileInputMobile.click();
+    } else {
+      folderInput.click();
+    }
   });
 
   // Reset input value on click so selecting the same folder again still triggers 'change'
@@ -866,6 +910,15 @@ document.addEventListener("DOMContentLoaded", () => {
     AudioFX.playClick();
     archiveInput.click();
   });
+
+  const btnSelectArchive = document.getElementById("btnSelectArchive");
+  if (btnSelectArchive) {
+    btnSelectArchive.addEventListener("click", (e) => {
+      e.stopPropagation();
+      AudioFX.playClick();
+      archiveInput.click();
+    });
+  }
 
   archiveInput.addEventListener("click", () => {
     archiveInput.value = "";

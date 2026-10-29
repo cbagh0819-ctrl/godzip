@@ -119,7 +119,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="css/style.css?v=2.2.0">
+  <link rel="stylesheet" href="css/style.css?v=2.3.0">
 </head>
 <body>
   <!-- LIGHTWEIGHT CINEMATIC CELESTIAL CANVAS -->
@@ -253,38 +253,51 @@
         <!-- 1. COMPRESS FOLDER DROPZONE -->
         <div class="dropzone-card" id="compressDropzone">
           <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+          <input type="file" id="fileInputMobile" multiple style="display: none;">
+          
           <div class="dropzone-icon-circle">
             <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
             </svg>
           </div>
 
-          <button class="btn-select-files" id="btnSelectFolder" onclick="document.getElementById('folderInput').click()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-              <line x1="12" y1="11" x2="12" y2="17"></line>
-              <line x1="9" y1="14" x2="15" y2="14"></line>
-            </svg>
-            Select Folder to Compress
-          </button>
+          <!-- Dual Selection Buttons for Phone & Desktop -->
+          <div class="dropzone-buttons-row">
+            <button class="btn-select-files btn-folder-select" id="btnSelectFolder" type="button">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                <line x1="12" y1="11" x2="12" y2="17"></line>
+                <line x1="9" y1="14" x2="15" y2="14"></line>
+              </svg>
+              Select Folder
+            </button>
+            <button class="btn-select-files btn-files-select" id="btnSelectFiles" type="button">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              Select Files / Photos
+            </button>
+          </div>
 
-          <p class="drop-text-sub" style="color: var(--accent-yellow); font-weight: 600; margin-top: 14px;">
-            ⚠️ Only folders are accepted (Single files like individual PDFs or images are rejected)
+          <p class="drop-text-sub" style="color: var(--accent-green); font-weight: 600; margin-top: 14px;">
+            ⚡ Supports Full Folders & Multiple Files/Photos
           </p>
-          <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Drop an entire folder directory here</p>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Tap button or drop items • Zero Server Upload • 100% Client-Side Lossless</p>
 
           <div class="supported-formats-pills">
-            <span class="format-pill pdf">📁 Project Folders</span>
-            <span class="format-pill img">📁 Photo & Media Albums</span>
-            <span class="format-pill video">📁 Video Collections</span>
-            <span class="format-pill audio">📁 Music & Audio Folders</span>
-            <span class="format-pill bin">📁 Nested Directories</span>
+            <span class="format-pill pdf">📁 Folders</span>
+            <span class="format-pill img">📸 Photos / Images</span>
+            <span class="format-pill video">🎬 Video Files</span>
+            <span class="format-pill audio">🎵 Audio Tracks</span>
+            <span class="format-pill bin">📦 Code & Documents</span>
           </div>
         </div>
 
         <!-- 2. EXTRACT ARCHIVE DROPZONE -->
         <div class="dropzone-card extract-theme" id="extractDropzone" style="display: none;">
-          <input type="file" id="archiveInput" accept=".god" style="display: none;">
+          <input type="file" id="archiveInput" accept=".god,.*,application/octet-stream" style="display: none;">
           <div class="dropzone-icon-circle" style="border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.15);">
             <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -293,7 +306,7 @@
             </svg>
           </div>
 
-          <button class="btn-select-archive" onclick="document.getElementById('archiveInput').click()">
+          <button class="btn-select-archive" id="btnSelectArchive" type="button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -302,7 +315,8 @@
           </button>
 
           <p class="drop-text-sub" style="color: var(--accent-blue); font-weight: 600; margin-top: 14px;">
-            📦 Drop your .god archive here to restore full original folder and files
+            📦 Tap to pick your .god archive on any phone or PC
+          </p>
           </p>
           <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Supports single or multi-volume .god files</p>
         </div>
@@ -316,10 +330,13 @@
         <div class="files-pane">
           <div class="files-header">
             <div class="files-title">
-              Folder: <span id="folderTitleName" style="color: var(--accent-green); margin-left: 6px;">--</span>
+              <span id="folderTitlePrefix">Folder:</span> <span id="folderTitleName" style="color: var(--accent-green); margin-left: 6px;">--</span>
               <span class="files-count-badge" id="filesCountBadge">0 files</span>
             </div>
-            <button class="btn-add-more" id="btnAddMore">📁 Choose Different Folder</button>
+            <div class="files-action-btns">
+              <button class="btn-add-more" id="btnAddMore">📁 Folder</button>
+              <button class="btn-add-more" id="btnAddFiles">📑 Add Files</button>
+            </div>
           </div>
           <div class="file-cards-list" id="fileCardsList">
             <!-- Dynamic file cards populated via JS -->
@@ -741,6 +758,6 @@
     </p>
   </footer>
 
-  <script src="js/app.js?v=2.2.0"></script>
+  <script src="js/app.js?v=2.3.0"></script>
 </body>
 </html>

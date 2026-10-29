@@ -343,28 +343,63 @@ body {
   font-size: 34px;
 }
 
+.dropzone-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
 /* Giant Select Button (iLovePDF Style) */
 .btn-select-files {
-  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
-  color: #000;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
-  padding: 18px 48px;
+  padding: 16px 32px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 24px var(--accent-green-glow);
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  transition: all 0.2s;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   letter-spacing: 0.5px;
+  touch-action: manipulation;
 }
 
-.btn-select-files:hover {
+.btn-folder-select {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: #000;
+  box-shadow: 0 6px 24px var(--accent-green-glow);
+}
+
+.btn-folder-select:hover {
   background: linear-gradient(135deg, #34d399, var(--accent-green));
-  transform: scale(1.03);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+.btn-files-select {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  color: #fff;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 6px 24px rgba(2, 132, 199, 0.35);
+}
+
+.btn-files-select:hover {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.45);
+}
+
+.files-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .drop-text-sub {
@@ -1901,3 +1936,409 @@ input:checked + .slider:before {
   50% { transform: scale(1.15); opacity: 1; }
   100% { transform: scale(0.95); opacity: 0.8; }
 }
+
+/* ==========================================================================
+   MOBILE & SMARTPHONE OPTIMIZATIONS (iOS Safari & Android Touch-First UI)
+   ========================================================================== */
+
+/* 1. Prevent mobile horizontal drift */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+button, a, input, select {
+  touch-action: manipulation;
+}
+
+/* 2. Tablet & Medium Screens (max-width: 900px) */
+@media (max-width: 900px) {
+  .btn-nav-desktop {
+    display: none !important;
+  }
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 3. Smartphone Touch Optimization (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Navbar */
+  .navbar {
+    padding: 10px 14px !important;
+    gap: 8px;
+  }
+
+  .nav-links {
+    display: none !important;
+  }
+
+  .brand-logo {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 17px !important;
+  }
+
+  .brand-name {
+    font-size: 16px !important;
+  }
+
+  .brand-badge {
+    font-size: 8px !important;
+  }
+
+  .nav-actions {
+    gap: 8px !important;
+  }
+
+  .btn-sound-toggle {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .sound-label {
+    display: none !important;
+  }
+
+  .creator-pill {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+    gap: 6px !important;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 24px 12px 36px 12px !important;
+  }
+
+  .hero-title {
+    font-size: clamp(22px, 6.8vw, 32px) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 10px !important;
+    padding: 0 4px;
+  }
+
+  .hero-subtitle {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 18px !important;
+    padding: 0 4px;
+  }
+
+  .mode-switcher-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+    padding: 4px !important;
+  }
+
+  .mode-tab-btn {
+    flex: 1 !important;
+    padding: 10px 6px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* Cinematic God Portal */
+  .portal-canvas-wrap {
+    height: 210px !important;
+    border-radius: 14px !important;
+  }
+
+  .god-caption-pill {
+    font-size: 10px !important;
+    padding: 6px 12px !important;
+    max-width: 92% !important;
+    white-space: normal !important;
+    text-align: center !important;
+    bottom: 10px !important;
+  }
+
+  .god-roster-carousel {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .god-roster-card {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+    border-radius: 12px !important;
+  }
+
+  .roster-thumb-wrap {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .roster-name {
+    font-size: 12px !important;
+  }
+
+  .roster-desc {
+    font-size: 10px !important;
+  }
+
+  .divine-decree-banner {
+    padding: 8px 12px !important;
+    border-radius: 16px !important;
+    margin-top: 10px !important;
+  }
+
+  .decree-speech {
+    font-size: 11px !important;
+  }
+
+  /* Dropzone Card */
+  .dropzone-container {
+    margin-top: 20px !important;
+    padding: 0 !important;
+  }
+
+  .dropzone-card {
+    padding: 22px 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .dropzone-icon-circle {
+    width: 60px !important;
+    height: 60px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .dropzone-icon-circle svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .dropzone-buttons-row {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .btn-select-files {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+  }
+
+  .btn-select-archive {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+  }
+
+  .supported-formats-pills {
+    gap: 5px !important;
+    margin-top: 14px !important;
+  }
+
+  .format-pill {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+  }
+
+  /* Workspace / File List */
+  .workspace-container {
+    padding: 0 10px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .files-pane, .options-pane {
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .files-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+  }
+
+  .files-title {
+    font-size: 14px !important;
+  }
+
+  .files-action-btns {
+    display: flex !important;
+    gap: 6px !important;
+  }
+
+  .btn-add-more {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .file-cards-list {
+    max-height: 280px !important;
+  }
+
+  .file-card {
+    padding: 8px 10px !important;
+  }
+
+  .file-card-name {
+    font-size: 12px !important;
+    max-width: 180px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .btn-compress-now {
+    width: 100% !important;
+    padding: 16px 18px !important;
+    font-size: 15px !important;
+    border-radius: 10px !important;
+    justify-content: center !important;
+  }
+
+  /* Processing Section */
+  .processing-container {
+    padding: 20px 10px !important;
+  }
+
+  .chamber-god-viewport {
+    height: 180px !important;
+    border-radius: 12px !important;
+    max-width: 100% !important;
+  }
+
+  .chamber-folder-status-overlay {
+    font-size: 9px !important;
+    padding: 4px 10px !important;
+    max-width: 90% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .divine-decree-display {
+    font-size: 11px !important;
+    flex-wrap: wrap !important;
+    text-align: center !important;
+  }
+
+  .proc-status {
+    font-size: 12px !important;
+  }
+
+  /* Result Screen */
+  .result-container {
+    padding: 0 10px !important;
+  }
+
+  .result-title {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+  }
+
+  .result-stats-card {
+    grid-template-columns: repeat(3, 1fr) !important;
+    padding: 12px 6px !important;
+    gap: 6px !important;
+  }
+
+  .stat-val {
+    font-size: 16px !important;
+  }
+
+  .stat-lbl {
+    font-size: 9px !important;
+  }
+
+  .result-actions {
+    width: 100% !important;
+  }
+
+  .btn-download-archive, .btn-download-sfx, .btn-reset {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .offline-ad-banner {
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 4px !important;
+  }
+
+  /* Features & Benchmarks */
+  .features-section, .benchmarks-section, .creator-section {
+    padding: 36px 14px !important;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .benchmark-table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .benchmark-table {
+    min-width: 520px !important;
+    font-size: 11px !important;
+  }
+
+  .creator-card {
+    padding: 20px 14px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 14px !important;
+  }
+
+  .creator-avatar {
+    width: 72px !important;
+    height: 72px !important;
+    font-size: 28px !important;
+  }
+
+  .creator-info h3 {
+    font-size: 20px !important;
+  }
+
+  .creator-links {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .creator-btn {
+    padding: 8px 14px !important;
+    font-size: 11px !important;
+  }
+
+  .footer {
+    padding: 24px 14px !important;
+    font-size: 11px !important;
+  }
+}
+
