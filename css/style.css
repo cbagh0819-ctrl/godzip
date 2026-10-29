@@ -970,6 +970,238 @@ input:checked + .slider:before {
   color: var(--accent-green);
 }
 
+/* DOWNLOAD SOFTWARE SECTION */
+.download-section {
+  padding: 80px 24px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.download-banner-card {
+  background: linear-gradient(135deg, #11131a 0%, #171b26 100%);
+  border: 2px solid var(--accent-green);
+  border-radius: 20px;
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 36px var(--accent-green-glow);
+}
+
+.download-banner-card::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-blue-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 36px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .download-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.download-info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  border-radius: 20px;
+  color: var(--accent-yellow);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.download-title {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+
+.download-title span {
+  color: var(--accent-green);
+}
+
+.download-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.download-features-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .download-features-pills {
+    justify-content: center;
+  }
+}
+
+.dl-pill {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  background: var(--bg-black);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dl-pill span {
+  color: var(--accent-green);
+}
+
+.btn-download-big {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: #000;
+  font-size: 19px;
+  font-weight: 900;
+  padding: 18px 40px;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 28px var(--accent-green-glow);
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-download-big:hover {
+  background: linear-gradient(135deg, #34d399, var(--accent-green));
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
+}
+
+.download-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .download-actions-row {
+    justify-content: center;
+  }
+}
+
+.btn-view-release {
+  background: var(--bg-black);
+  color: var(--text-white);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-view-release:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.hash-card {
+  background: var(--bg-black);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hash-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hash-value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-elevated);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.hash-value {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  word-break: break-all;
+  flex: 1;
+}
+
+.btn-copy-hash {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-white);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy-hash:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.offline-ad-banner {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.offline-ad-banner a {
+  color: var(--accent-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.offline-ad-banner a:hover {
+  text-decoration: underline;
+}
+
 /* FOOTER */
 .footer {
   padding: 36px 24px;

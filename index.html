@@ -20,7 +20,8 @@
     </a>
 
     <nav class="nav-links">
-      <a href="#compress" class="nav-link active">Compress Online</a>
+      <a href="#heroSection" class="nav-link active">Compress Online</a>
+      <a href="#download" class="nav-link">Download Software</a>
       <a href="#features" class="nav-link">Features</a>
       <a href="#benchmarks" class="nav-link">Benchmarks</a>
       <a href="#creator" class="nav-link">Creator</a>
@@ -32,8 +33,8 @@
         <span class="dot"></span>
         <span>By Chandan Bagh</span>
       </a>
-      <a href="https://github.com/cbagh0819-ctrl/godzip/releases" target="_blank" class="btn-nav-desktop">
-        ⬇ Desktop App (.exe)
+      <a href="#download" class="btn-nav-desktop">
+        ⬇ Download App (.exe)
       </a>
     </div>
   </header>
@@ -209,6 +210,11 @@
           📦 Download Self-Extracting SFX (.bat / .exe)
         </button>
 
+        <div class="offline-ad-banner">
+          <span>⚡ Compressing massive archives or offline folders?</span>
+          <a href="#download">Download GODZIP for Windows (.exe) →</a>
+        </div>
+
         <button class="btn-reset" id="btnReset">Compress another file or batch</button>
       </div>
     </section>
@@ -308,6 +314,61 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD SOFTWARE SECTION -->
+    <section class="download-section" id="download">
+      <div class="download-banner-card">
+        <div class="download-grid">
+          <div>
+            <div class="download-info-pill">✨ Official Standalone Release • v1.0.0</div>
+            <h2 class="download-title">Download <span>GODZIP</span> for Windows</h2>
+            <p class="download-desc">
+              Get the native desktop application and high-speed CLI tool bundled into a single standalone executable. Compress gigabytes of data offline with maximum speed, Windows Explorer context menus, and military-grade encryption.
+            </p>
+
+            <div class="download-features-pills">
+              <div class="dl-pill"><span>✓</span> Zero Dependencies (No Python Needed)</div>
+              <div class="dl-pill"><span>✓</span> Dark-Mode Qt GUI + Command Line</div>
+              <div class="dl-pill"><span>✓</span> Windows Explorer Right-Click Menu</div>
+              <div class="dl-pill"><span>✓</span> Multi-Volume & Self-Extracting SFX</div>
+              <div class="dl-pill"><span>✓</span> Windows 10 & 11 (x64) Compatible</div>
+            </div>
+
+            <div class="download-actions-row">
+              <a href="https://github.com/cbagh0819-ctrl/godzip/releases/download/v1.0.0/GODZIP.exe" class="btn-download-big">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download GODZIP.exe (70 MB)
+              </a>
+
+              <a href="https://github.com/cbagh0819-ctrl/godzip/releases/tag/v1.0.0" target="_blank" class="btn-view-release">
+                View Release on GitHub
+              </a>
+            </div>
+          </div>
+
+          <!-- Hash & Requirements Card -->
+          <div class="hash-card">
+            <div class="hash-label">🔒 Cryptographic SHA-256 Digest</div>
+            <p style="font-size: 11px; color: var(--text-muted);">Verify package integrity against official release:</p>
+            <div class="hash-value-wrap">
+              <span class="hash-value" id="hashText">5939ffc2f11c3b00e32d0f34c811cf213f067bd4fe77921267b609a1514bd67e</span>
+              <button class="btn-copy-hash" id="btnCopyHash" onclick="navigator.clipboard.writeText('5939ffc2f11c3b00e32d0f34c811cf213f067bd4fe77921267b609a1514bd67e'); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 2000);">Copy</button>
+            </div>
+
+            <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+              <strong style="color: var(--text-white);">Quick Launch:</strong>
+              <div style="font-family: monospace; background: var(--bg-elevated); padding: 6px 10px; border-radius: 4px; margin-top: 4px; font-size: 11px;">
+                .\GODZIP.exe create -i &quot;folder&quot; -o &quot;backup.god&quot;
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
