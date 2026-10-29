@@ -200,63 +200,50 @@
         </p>
       </div>
 
-      <!-- PANTHEON OF COMPRESSION GODS SELECTOR -->
-      <div class="pantheon-bar" id="pantheonBar">
-        <div class="pantheon-header">
-          <span class="pantheon-spark">✨</span>
-          <span class="pantheon-title">SUMMON THY COMPRESSION DEITY</span>
-          <span class="pantheon-spark">✨</span>
-        </div>
-        <div class="pantheon-grid">
-          <button class="pantheon-card active" data-god="zeus" type="button">
-            <span class="god-badge-icon">⚡</span>
-            <div class="god-card-info">
-              <span class="god-card-name">ZEUS</span>
-              <span class="god-card-domain">Lightning Strike • Ultra-Fast</span>
+      <!-- CINEMATIC GODS COMPRESSING FOLDERS STAGE -->
+      <div class="god-hero-stage">
+        <!-- God Portal & Real Compressed Folder Artwork -->
+        <div class="god-portal-container" id="godPortal">
+          <div class="portal-corona"></div>
+          <div class="portal-viewport">
+            <img src="assets/images/zeus_compressing_folder.jpg" alt="Zeus Crushing Folder with Lightning" class="god-artwork-img" id="heroGodImg">
+            <div class="god-overlay-vignette"></div>
+            <div class="god-caption-pill">
+              <span class="pulsing-core-dot"></span>
+              <span id="godCaptionText">⚡ ZEUS CRUSHING FOLDER INTO ULTRA-DENSE .GOD SINGULARITY</span>
             </div>
-            <span class="god-card-active-glow"></span>
-          </button>
-          <button class="pantheon-card" data-god="chronos" type="button">
-            <span class="god-badge-icon">🌌</span>
-            <div class="god-card-info">
-              <span class="god-card-name">CHRONOS</span>
-              <span class="god-card-domain">Cosmic Singularity • Maximum Ratio</span>
-            </div>
-            <span class="god-card-active-glow"></span>
-          </button>
-          <button class="pantheon-card" data-god="hermes" type="button">
-            <span class="god-badge-icon">🪽</span>
-            <div class="god-card-info">
-              <span class="god-card-name">HERMES</span>
-              <span class="god-card-domain">Astral Stream • Balanced</span>
-            </div>
-            <span class="god-card-active-glow"></span>
-          </button>
-          <button class="pantheon-card" data-god="ares" type="button">
-            <span class="god-badge-icon">🛡️</span>
-            <div class="god-card-info">
-              <span class="god-card-name">ARES</span>
-              <span class="god-card-domain">Aegis Fortress • AES-256 Encrypted</span>
-            </div>
-            <span class="god-card-active-glow"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- CELESTIAL GOD DECREE & INTERACTIVE AVATAR -->
-      <div class="god-altar-stage" id="godAltarStage">
-        <div class="divine-aura-ring"></div>
-        <div class="god-avatar-display" id="godAvatar">
-          <div class="god-crown" id="godCrown">⚡</div>
-          <div class="god-face">
-            <div class="god-eye left-eye"></div>
-            <div class="god-eye right-eye"></div>
           </div>
-          <div class="god-aura-flame"></div>
         </div>
-        <div class="god-decree-box" id="godDecreeBox">
+
+        <!-- Interactive Real God Switcher Carousel -->
+        <div class="god-roster-carousel">
+          <div class="god-roster-card active" data-god="zeus" data-img="assets/images/zeus_compressing_folder.jpg" data-caption="⚡ ZEUS CRUSHING FOLDER INTO ULTRA-DENSE .GOD SINGULARITY" data-decree="“Mortal, surrender thy entire folder unto Zeus. We shall crush thy bytes with 1.21 gigawatts of celestial lossless compression!”">
+            <div class="roster-thumb-wrap">
+              <img src="assets/images/zeus_compressing_folder.jpg" alt="Zeus Thumb" class="roster-thumb">
+            </div>
+            <div class="roster-info">
+              <div class="roster-name">⚡ ZEUS THE THUNDERER</div>
+              <div class="roster-desc">Lightning Strike • Ultra-Fast Codec</div>
+            </div>
+            <span class="roster-active-badge">ACTIVE DEITY</span>
+          </div>
+
+          <div class="god-roster-card" data-god="chronos" data-img="assets/images/chronos_compressing_folder.jpg" data-caption="🌌 CHRONOS COLLAPSING FOLDER THROUGH GRAVITATIONAL SPACE-TIME" data-decree="“Space and entropy bend to my will. Thy folder shall be crushed into an immutable micro-singularity!”">
+            <div class="roster-thumb-wrap">
+              <img src="assets/images/chronos_compressing_folder.jpg" alt="Chronos Thumb" class="roster-thumb">
+            </div>
+            <div class="roster-info">
+              <div class="roster-name">🌌 CHRONOS THE TITAN</div>
+              <div class="roster-desc">Cosmic Gravitational Singularity • Max Ratio</div>
+            </div>
+            <span class="roster-active-badge">ACTIVE DEITY</span>
+          </div>
+        </div>
+
+        <!-- Divine Decree Box -->
+        <div class="divine-decree-banner">
           <p class="decree-speech" id="decreeSpeech">
-            &ldquo;Mortal, entrust thy folder unto Zeus. We shall strike thy bytes with 1.21 gigawatts of celestial lossless compression.&rdquo;
+            &ldquo;Mortal, surrender thy entire folder unto Zeus. We shall crush thy bytes with 1.21 gigawatts of celestial lossless compression!&rdquo;
           </p>
         </div>
       </div>
@@ -412,39 +399,12 @@
         <div class="chamber-celestial-bg"></div>
         <div class="chamber-runes-ring"></div>
         
-        <!-- Divine Deity Presence Above -->
-        <div class="chamber-god-figure" id="chamberDeityFigure">
-          <div class="chamber-god-halo"></div>
-          <div class="chamber-god-crown" id="chamberGodCrown">⚡</div>
-          <div class="chamber-god-name" id="chamberGodName">ZEUS THE THUNDERER</div>
-        </div>
-
-        <!-- The Compression Arena: Hands Crushing Floating Folder -->
-        <div class="crushing-arena">
-          <!-- Colossal Left Hand -->
-          <div class="god-hand left-hand" id="godHandLeft">
-            <div class="hand-palm">🖐️</div>
-            <div class="hand-plasma-charge left-charge"></div>
-          </div>
-
-          <!-- Levitating Folder Under Divine Gravitational Pressure -->
-          <div class="crushing-folder-target" id="crushingFolderTarget">
-            <div class="cosmic-singularity-vortex" id="chamberVortex"></div>
-            <div class="folder-avatar" id="folderAvatar">📁</div>
-            <div class="folder-data-cubes" id="dataCubes">
-              <span class="cube c1">📄</span>
-              <span class="cube c2">🖼️</span>
-              <span class="cube c3">🎬</span>
-              <span class="cube c4">🎵</span>
-              <span class="cube c5">📦</span>
-            </div>
-            <div class="compression-shockwave" id="compressionShockwave"></div>
-          </div>
-
-          <!-- Colossal Right Hand -->
-          <div class="god-hand right-hand" id="godHandRight">
-            <div class="hand-palm mirror">🖐️</div>
-            <div class="hand-plasma-charge right-charge"></div>
+        <!-- Photorealistic God Crushing Artwork in Chamber -->
+        <div class="chamber-god-viewport">
+          <img src="assets/images/zeus_compressing_folder.jpg" id="chamberGodImg" class="chamber-live-god-art" alt="God Crushing Folder">
+          <div class="chamber-power-flare" id="chamberFlare"></div>
+          <div class="chamber-folder-status-overlay">
+            <div class="chamber-god-name" id="chamberGodName">⚡ ZEUS CRUSHING FOLDER WITH 1.21 GIGAWATTS</div>
           </div>
         </div>
       </div>

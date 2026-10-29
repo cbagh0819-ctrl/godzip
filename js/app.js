@@ -267,28 +267,49 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   let currentGodKey = "zeus";
-  const pantheonCards = document.querySelectorAll(".pantheon-card");
-  const godCrown = document.getElementById("godCrown");
+  const rosterCards = document.querySelectorAll(".god-roster-card");
+  const heroGodImg = document.getElementById("heroGodImg");
+  const godCaptionText = document.getElementById("godCaptionText");
   const decreeSpeech = document.getElementById("decreeSpeech");
-  const godAvatar = document.getElementById("godAvatar");
-  const leftEye = document.querySelector(".left-eye");
-  const rightEye = document.querySelector(".right-eye");
+  const chamberGodImg = document.getElementById("chamberGodImg");
+  const chamberGodName = document.getElementById("chamberGodName");
+  const godPortal = document.getElementById("godPortal");
 
   function selectGod(godKey) {
     currentGodKey = godKey;
     const god = pantheonGods[godKey];
     if (!god) return;
 
-    pantheonCards.forEach(c => {
-      c.classList.toggle("active", c.getAttribute("data-god") === godKey);
+    rosterCards.forEach(c => {
+      const match = c.getAttribute("data-god") === godKey;
+      c.classList.toggle("active", match);
+      if (match) {
+        const imgSrc = c.getAttribute("data-img");
+        const caption = c.getAttribute("data-caption");
+        const decree = c.getAttribute("data-decree");
+
+        if (heroGodImg && imgSrc) {
+          heroGodImg.style.opacity = "0.4";
+          setTimeout(() => {
+            heroGodImg.src = imgSrc;
+            heroGodImg.style.opacity = "1";
+          }, 150);
+        }
+        if (godCaptionText && caption) godCaptionText.textContent = caption;
+        if (decreeSpeech && decree) decreeSpeech.textContent = decree;
+
+        if (chamberGodImg && imgSrc) chamberGodImg.src = imgSrc;
+        if (chamberGodName) {
+          chamberGodName.textContent = godKey === "zeus"
+            ? "⚡ ZEUS CRUSHING FOLDER WITH 1.21 GIGAWATTS"
+            : "🌌 CHRONOS CRUSHING FOLDER INTO COSMIC SINGULARITY";
+        }
+      }
     });
 
-    if (godCrown) godCrown.textContent = god.crown;
-    if (decreeSpeech) decreeSpeech.textContent = god.decree;
-
-    if (godAvatar) {
-      godAvatar.style.borderColor = god.color;
-      godAvatar.style.boxShadow = `0 0 35px ${god.glowColor}`;
+    if (godPortal) {
+      godPortal.style.borderColor = god.color;
+      godPortal.style.boxShadow = `0 0 50px ${god.glowColor}, 0 20px 60px rgba(0, 0, 0, 0.9)`;
     }
 
     // Auto-select corresponding level in sidebar options
@@ -300,45 +321,28 @@ document.addEventListener("DOMContentLoaded", () => {
       if (radio) radio.checked = match;
     });
 
-    // Auto-toggle AES encryption if Ares
-    if (chkEncrypt && passBox) {
-      chkEncrypt.checked = god.encrypt;
-      passBox.style.display = god.encrypt ? "block" : "none";
-    }
-
     AudioFX.playThunder();
   }
 
-  pantheonCards.forEach(card => {
+  rosterCards.forEach(card => {
     card.addEventListener("click", () => {
       const godKey = card.getAttribute("data-god");
       selectGod(godKey);
     });
   });
 
-  // Interactive 3D Cursor Parallax & God Eye Tracking
+  // Interactive 3D Cursor Parallax on God Portal
   window.addEventListener("mousemove", (e) => {
-    if (!godAvatar || !leftEye || !rightEye) return;
+    if (!godPortal || !heroGodImg) return;
 
-    const rect = godAvatar.getBoundingClientRect();
-    const avatarCenterX = rect.left + rect.width / 2;
-    const avatarCenterY = rect.top + rect.height / 2;
+    const rect = godPortal.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
 
-    const deltaX = e.clientX - avatarCenterX;
-    const deltaY = e.clientY - avatarCenterY;
-    const angle = Math.atan2(deltaY, deltaX);
-    const dist = Math.min(3, Math.hypot(deltaX, deltaY) / 60);
+    const deltaX = (e.clientX - centerX) / window.innerWidth;
+    const deltaY = (e.clientY - centerY) / window.innerHeight;
 
-    const eyeX = Math.cos(angle) * dist;
-    const eyeY = Math.sin(angle) * dist;
-
-    leftEye.style.transform = `translate(${eyeX}px, ${eyeY}px)`;
-    rightEye.style.transform = `translate(${eyeX}px, ${eyeY}px)`;
-
-    // Gentle 3D avatar tilt
-    const tiltX = (deltaY / window.innerHeight) * -15;
-    const tiltY = (deltaX / window.innerWidth) * 15;
-    godAvatar.style.transform = `perspective(500px) rotateX(${tiltX.toFixed(1)}deg) rotateY(${tiltY.toFixed(1)}deg)`;
+    heroGodImg.style.transform = `scale(1.02) translate(${deltaX * -15}px, ${deltaY * -15}px)`;
   });
 
   // ==========================================
@@ -629,14 +633,22 @@ document.addEventListener("DOMContentLoaded", () => {
     processingSection.style.display = "block";
 
     const god = pantheonGods[currentGodKey] || pantheonGods.zeus;
-    if (chamberGodCrown) chamberGodCrown.textContent = god.crown;
-    if (chamberGodName) chamberGodName.textContent = god.name;
+    if (chamberGodImg) {
+      chamberGodImg.src = currentGodKey === "chronos"
+        ? "assets/images/chronos_compressing_folder.jpg"
+        : "assets/images/zeus_compressing_folder.jpg";
+    }
+    if (chamberGodName) {
+      chamberGodName.textContent = currentGodKey === "chronos"
+        ? "🌌 CHRONOS CRUSHING FOLDER INTO COSMIC SINGULARITY"
+        : "⚡ ZEUS CRUSHING FOLDER WITH 1.21 GIGAWATTS";
+    }
     if (decreeIcon) decreeIcon.textContent = god.crown;
 
     progressBarFill.style.width = "5%";
     procPct.textContent = "5%";
     procStatus.textContent = "Analyzing folder entropy & data blocks...";
-    decreeText.textContent = `${god.name} is seizing folder blocks with celestial energy...`;
+    if (decreeText) decreeText.textContent = `${god.name} is seizing folder blocks with celestial energy...`;
 
     // Process files
     const fileBuffers = [];
