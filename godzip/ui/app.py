@@ -134,20 +134,32 @@ class MainWindow(QMainWindow):
             btn.setChecked(True)
 
     def _quick_extract(self):
-        from PySide6.QtWidgets import QFileDialog
+        from PySide6.QtWidgets import QFileDialog, QInputDialog, QLineEdit
         path, _ = QFileDialog.getOpenFileName(self, "Select .god Archive to Extract", filter="GODZIP Archives (*.god)")
         if path:
+            reader = ArchiveReader(path)
+            info = reader.inspect()
+            password = None
+            if info.get("is_encrypted"):
+                pwd, ok = QInputDialog.getText(
+                    self, "Password Required", "Enter password for encrypted archive:", QLineEdit.Password
+                )
+                if not ok or not pwd:
+                    return
+                password = pwd
+
             dest = QFileDialog.getExistingDirectory(self, "Select Destination Folder")
             if dest:
-                self._start_extraction_job(path, dest)
+                self._start_extraction_job(path, dest, password)
 
-    def _start_compression_job(self, source_paths: list, output_path: str, mode: CompressionMode, enable_dedup: bool):
+    def _start_compression_job(self, source_paths: list, output_path: str, mode: CompressionMode, enable_dedup: bool, password: str = None):
         try:
             self.job_controller.start_compression(
                 source_paths=source_paths,
                 output_path=output_path,
                 mode=mode,
                 enable_dedup=enable_dedup,
+                password=password,
                 on_progress=lambda p: self.job_bridge.progress.emit(p),
                 on_complete=lambda res: self.job_bridge.completed.emit(res),
                 on_error=lambda err: self.job_bridge.error.emit(err),
@@ -156,11 +168,12 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Job Start Error", str(e))
 
-    def _start_extraction_job(self, archive_path: str, destination_dir: str):
+    def _start_extraction_job(self, archive_path: str, destination_dir: str, password: str = None):
         try:
             self.job_controller.start_extraction(
                 archive_path=archive_path,
                 destination_dir=destination_dir,
+                password=password,
                 on_progress=lambda p: self.job_bridge.progress.emit(p),
                 on_complete=lambda res: self.job_bridge.completed.emit(res),
                 on_error=lambda err: self.job_bridge.error.emit(err),

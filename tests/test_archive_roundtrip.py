@@ -154,3 +154,45 @@ def test_mixed_media_folder_compression(temp_dir):
         assert os.path.exists(rec_f), f"Recovered file missing: {fname}"
         with open(orig_f, "rb") as of, open(rec_f, "rb") as rf:
             assert of.read() == rf.read(), f"Byte mismatch for {fname}"
+
+
+def test_encrypted_archive_lifecycle(temp_dir):
+    """Verifies AES-256-GCM encryption, wrong password rejection, and exact decrypted restoration."""
+    from godzip.common.exceptions import ArchiveEncryptedError, InvalidPasswordError
+
+    secret_file = os.path.join(temp_dir, "confidential.txt")
+    secret_data = b"TOP SECRET: Encrypted archive test payload with confidential data.\n" * 200
+    with open(secret_file, "wb") as f:
+        f.write(secret_data)
+
+    enc_archive = os.path.join(temp_dir, "protected.god")
+    password = "MasterPassword2026!"
+
+    # Create encrypted archive
+    writer = ArchiveWriter(output_path=enc_archive, password=password)
+    writer.add_sources([secret_file])
+
+    # 1. Inspect without password (metadata visible, flag marked)
+    reader_no_pass = ArchiveReader(enc_archive)
+    info = reader_no_pass.inspect()
+    assert info["is_encrypted"] is True
+
+    # 2. Extract without password must fail
+    with pytest.raises(ArchiveEncryptedError):
+        reader_no_pass.extract(os.path.join(temp_dir, "fail_dest"))
+
+    # 3. Extract with WRONG password must fail
+    with pytest.raises(InvalidPasswordError):
+        reader_wrong = ArchiveReader(enc_archive, password="WrongPassword123")
+        reader_wrong.extract(os.path.join(temp_dir, "fail_dest"))
+
+    # 4. Extract with CORRECT password must succeed and restore 100% byte-exact
+    dest_dir = os.path.join(temp_dir, "success_dest")
+    reader_correct = ArchiveReader(enc_archive, password=password)
+    assert reader_correct.verify() is True
+    reader_correct.extract(dest_dir)
+
+    recovered = os.path.join(dest_dir, "confidential.txt")
+    assert os.path.exists(recovered)
+    with open(recovered, "rb") as rf:
+        assert rf.read() == secret_data

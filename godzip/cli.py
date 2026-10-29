@@ -38,6 +38,7 @@ def cmd_create(args) -> int:
         output_path=output,
         mode=mode,
         enable_dedup=not args.no_dedup,
+        password=args.password,
         progress_callback=_print_progress,
     )
     orig_bytes, comp_bytes = writer.add_sources(inputs)
@@ -58,7 +59,7 @@ def cmd_extract(args) -> int:
     output = args.output or "."
     print(f"GODZIP: Extracting '{archive}' to '{output}'...")
     start_time = time.time()
-    reader = ArchiveReader(archive)
+    reader = ArchiveReader(archive, password=args.password)
     bytes_written = reader.extract(
         destination_dir=output,
         progress_callback=_print_progress
@@ -93,7 +94,7 @@ def cmd_inspect(args) -> int:
 def cmd_verify(args) -> int:
     archive = args.archive
     print(f"GODZIP: Verifying cryptographic digests for '{archive}'...")
-    reader = ArchiveReader(archive)
+    reader = ArchiveReader(archive, password=args.password)
     reader.verify(progress_callback=_print_progress)
     sys.stdout.write("\n")
     print("All blocks and file checksums verified: 100% BYTE-EXACT INTEGRITY CONFIRMED.")
@@ -126,11 +127,13 @@ def main():
     p_create.add_argument("-o", "--output", required=True, help="Destination .god file")
     p_create.add_argument("-m", "--mode", default="balanced", choices=["fast", "balanced", "max", "research"], help="Compression mode")
     p_create.add_argument("--no-dedup", action="store_true", help="Disable deduplication")
+    p_create.add_argument("-p", "--password", default=None, help="Encrypt archive with AES-256-GCM password")
 
     # Extract
     p_extract = subparsers.add_parser("extract", help="Extract a .god archive")
     p_extract.add_argument("-a", "--archive", required=True, help="Input .god file")
     p_extract.add_argument("-o", "--output", default=".", help="Output directory")
+    p_extract.add_argument("-p", "--password", default=None, help="Password for encrypted archive")
 
     # Inspect
     p_inspect = subparsers.add_parser("inspect", help="Inspect archive structure and file list")
@@ -139,6 +142,7 @@ def main():
     # Verify
     p_verify = subparsers.add_parser("verify", help="Verify archive block and file digests")
     p_verify.add_argument("-a", "--archive", required=True, help="Input .god file")
+    p_verify.add_argument("-p", "--password", default=None, help="Password for encrypted archive")
 
     # Analyze
     p_analyze = subparsers.add_parser("analyze", help="Analyze data profile of a file")

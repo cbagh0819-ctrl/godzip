@@ -11,6 +11,7 @@ from ..common.constants import (
     MAGIC_TRAILER,
     MAX_EXPANSION_RATIO,
     MAX_BLOCK_SIZE,
+    FLAG_ENCRYPTED,
 )
 from ..common.types import ArchiveHeader, BlockMetadata, FileEntry, JobProgress
 from ..common.exceptions import (
@@ -18,9 +19,12 @@ from ..common.exceptions import (
     ChecksumMismatchError,
     DecompressionBombError,
     JobCancelledError,
+    InvalidPasswordError,
+    ArchiveEncryptedError,
 )
 from ..codecs.registry import CodecRegistry
 from ..engine.filters import invert_filter
+from ..integrity.crypto import ArchiveCrypto, AUTH_HEADER_SIZE
 from ..integrity.hasher import Hasher
 from ..integrity.verifier import IntegrityVerifier, SafeFileWriter
 from .format import (
@@ -35,11 +39,13 @@ from .format import (
 class ArchiveReader:
     """Reads, inspects, verifies, and safely extracts GODZIP archives."""
 
-    def __init__(self, archive_path: str):
+    def __init__(self, archive_path: str, password: Optional[str] = None):
         self.archive_path = os.path.abspath(archive_path)
         if not os.path.exists(self.archive_path):
             raise FileNotFoundError(f"Archive not found: {self.archive_path}")
 
+        self.password = password
+        self.crypto_key: Optional[bytes] = None
         self.header: ArchiveHeader = None
         self.blocks: List[BlockMetadata] = []
         self.block_map: Dict[int, BlockMetadata] = {}
@@ -82,6 +88,12 @@ class ArchiveReader:
             if actual_catalog_crc != catalog_crc:
                 raise CorruptArchiveError("Catalog checksum CRC32 verification failed")
 
+            # 6. Verify encryption auth header if password provided
+            if (self.header.flags & FLAG_ENCRYPTED) and self.password:
+                fp.seek(HEADER_STRUCT.size)
+                auth_header = fp.read(AUTH_HEADER_SIZE)
+                self.crypto_key = ArchiveCrypto.verify_auth_header(self.password, auth_header)
+
     def inspect(self) -> Dict:
         """Returns structured metadata about the archive contents."""
         total_orig = sum(f.original_size for f in self.files)
@@ -93,6 +105,7 @@ class ArchiveReader:
             "archive_path": self.archive_path,
             "version": self.header.version,
             "flags": self.header.flags,
+            "is_encrypted": bool(self.header.flags & FLAG_ENCRYPTED),
             "total_files": len(self.files),
             "total_blocks": len(self.blocks),
             "original_bytes": total_orig,
@@ -123,6 +136,14 @@ class ArchiveReader:
         start_time = time.time()
 
         with open(self.archive_path, "rb") as fp:
+            if self.header.flags & FLAG_ENCRYPTED:
+                if not self.crypto_key:
+                    if not self.password:
+                        raise ArchiveEncryptedError("Archive is password-protected. Password is required.")
+                    fp.seek(HEADER_STRUCT.size)
+                    auth_header = fp.read(AUTH_HEADER_SIZE)
+                    self.crypto_key = ArchiveCrypto.verify_auth_header(self.password, auth_header)
+
             for f_idx, f_entry in enumerate(self.files):
                 if cancel_check and cancel_check():
                     raise JobCancelledError("Verification cancelled")
@@ -142,6 +163,10 @@ class ArchiveReader:
                     # Check block CRC
                     if not IntegrityVerifier.verify_crc32(comp_data, meta.crc32):
                         raise ChecksumMismatchError(f"CRC32 mismatch on block {b_id}")
+
+                    # Decrypt payload if archive is encrypted
+                    if self.header.flags & FLAG_ENCRYPTED:
+                        comp_data = ArchiveCrypto.decrypt_block(comp_data, self.crypto_key, meta.block_id)
 
                     # Decompress and verify
                     codec = CodecRegistry.get(meta.codec_id)
@@ -197,6 +222,14 @@ class ArchiveReader:
         start_time = time.time()
 
         with open(self.archive_path, "rb") as fp:
+            if self.header.flags & FLAG_ENCRYPTED:
+                if not self.crypto_key:
+                    if not self.password:
+                        raise ArchiveEncryptedError("Archive is password-protected. Password is required.")
+                    fp.seek(HEADER_STRUCT.size)
+                    auth_header = fp.read(AUTH_HEADER_SIZE)
+                    self.crypto_key = ArchiveCrypto.verify_auth_header(self.password, auth_header)
+
             for f_idx, f_entry in enumerate(self.files):
                 if cancel_check and cancel_check():
                     raise JobCancelledError("Extraction cancelled by user")
@@ -222,6 +255,10 @@ class ArchiveReader:
 
                         if not IntegrityVerifier.verify_crc32(comp_data, meta.crc32):
                             raise ChecksumMismatchError(f"CRC32 mismatch on block {b_id}")
+
+                        # Decrypt payload if archive is encrypted
+                        if self.header.flags & FLAG_ENCRYPTED:
+                            comp_data = ArchiveCrypto.decrypt_block(comp_data, self.crypto_key, meta.block_id)
 
                         codec = CodecRegistry.get(meta.codec_id)
                         decomp = codec.decompress(comp_data, meta.uncompressed_size)

@@ -20,6 +20,14 @@ class ChecksumMismatchError(GodZipException):
     """Raised when cryptographic digest verification fails."""
     pass
 
+class InvalidPasswordError(GodZipException):
+    """Raised when an incorrect password is provided for an encrypted archive."""
+    pass
+
+class ArchiveEncryptedError(GodZipException):
+    """Raised when an encrypted archive is opened without providing a password."""
+    pass
+
 class DecompressionBombError(GodZipException):
     """Raised when a compressed block claims an expansion factor exceeding safety limits."""
     pass

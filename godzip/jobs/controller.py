@@ -54,6 +54,7 @@ class JobController:
         output_path: str,
         mode: CompressionMode = CompressionMode.BALANCED,
         enable_dedup: bool = True,
+        password: Optional[str] = None,
         on_progress: Optional[Callable[[JobProgress], None]] = None,
         on_complete: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_error: Optional[Callable[[str], None]] = None,
@@ -78,6 +79,7 @@ class JobController:
                     output_path=output_path,
                     mode=mode,
                     enable_dedup=enable_dedup,
+                    password=password,
                     progress_callback=progress_handler,
                     cancel_check=self._cancel_check,
                 )
@@ -114,6 +116,7 @@ class JobController:
         self,
         archive_path: str,
         destination_dir: str,
+        password: Optional[str] = None,
         on_progress: Optional[Callable[[JobProgress], None]] = None,
         on_complete: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_error: Optional[Callable[[str], None]] = None,
@@ -134,7 +137,7 @@ class JobController:
                     if on_progress:
                         on_progress(p)
 
-                reader = ArchiveReader(archive_path)
+                reader = ArchiveReader(archive_path, password=password)
                 bytes_extracted = reader.extract(
                     destination_dir=destination_dir,
                     progress_callback=progress_handler,

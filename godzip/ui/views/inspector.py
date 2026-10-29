@@ -2,14 +2,15 @@
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame,
-    QTableWidget, QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox
+    QTableWidget, QTableWidgetItem, QHeaderView, QFileDialog, QMessageBox,
+    QInputDialog, QLineEdit
 )
 from PySide6.QtCore import Signal
 from ...archive.reader import ArchiveReader
 
 
 class InspectorView(QWidget):
-    extract_requested = Signal(str, str) # archive_path, destination
+    extract_requested = Signal(str, str, object) # archive_path, destination, password
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -83,7 +84,8 @@ class InspectorView(QWidget):
             self.sum_files.setText(f"Files: {info['total_files']:,}")
             self.sum_orig.setText(f"Original: {info['original_bytes'] / (1024*1024):.2f} MB")
             self.sum_comp.setText(f"Compressed: {info['compressed_bytes'] / (1024*1024):.2f} MB")
-            self.sum_ratio.setText(f"Ratio: {info['compression_ratio']:.2f}x ({info['reduction_pct']:.1f}%)")
+            enc_str = " | 🔒 AES-256" if info.get("is_encrypted") else ""
+            self.sum_ratio.setText(f"Ratio: {info['compression_ratio']:.2f}x ({info['reduction_pct']:.1f}%){enc_str}")
 
             self.table.setRowCount(0)
             for f in info["files"]:
@@ -107,6 +109,17 @@ class InspectorView(QWidget):
             return
         try:
             reader = ArchiveReader(self.current_archive_path)
+            info = reader.inspect()
+            password = None
+            if info.get("is_encrypted"):
+                pwd, ok = QInputDialog.getText(
+                    self, "Password Required", "Enter password for encrypted archive:", QLineEdit.Password
+                )
+                if not ok or not pwd:
+                    return
+                password = pwd
+
+            reader = ArchiveReader(self.current_archive_path, password=password)
             if reader.verify():
                 QMessageBox.information(self, "Integrity Verified", "All block CRCs, cryptographic digests, and recovery bytes match perfectly!")
         except Exception as e:
@@ -115,6 +128,17 @@ class InspectorView(QWidget):
     def _on_extract_clicked(self):
         if not self.current_archive_path:
             return
+        reader = ArchiveReader(self.current_archive_path)
+        info = reader.inspect()
+        password = None
+        if info.get("is_encrypted"):
+            pwd, ok = QInputDialog.getText(
+                self, "Password Required", "Enter password for encrypted archive:", QLineEdit.Password
+            )
+            if not ok or not pwd:
+                return
+            password = pwd
+
         dest = QFileDialog.getExistingDirectory(self, "Select Destination Directory")
         if dest:
-            self.extract_requested.emit(self.current_archive_path, dest)
+            self.extract_requested.emit(self.current_archive_path, dest, password)

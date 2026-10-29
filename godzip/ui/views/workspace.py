@@ -10,7 +10,7 @@ from ...common.constants import CompressionMode
 
 
 class WorkspaceView(QWidget):
-    start_compression = Signal(list, str, object, bool) # files, output_path, mode, dedup
+    start_compression = Signal(list, str, object, bool, str) # files, output_path, mode, dedup, password
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -102,6 +102,23 @@ class WorkspaceView(QWidget):
         self.chk_dedup.setChecked(True)
         opt_layout.addWidget(self.chk_dedup)
 
+        # Password Protection Row
+        pass_row = QHBoxLayout()
+        pass_lbl = QLabel("Password (AES-256):")
+        pass_lbl.setFixedWidth(120)
+        self.pass_edit = QLineEdit()
+        self.pass_edit.setPlaceholderText("Optional: Leave empty for unencrypted archive")
+        self.pass_edit.setEchoMode(QLineEdit.Password)
+        
+        self.chk_show_pass = QCheckBox("Show")
+        self.chk_show_pass.stateChanged.connect(
+            lambda s: self.pass_edit.setEchoMode(QLineEdit.Normal if s else QLineEdit.Password)
+        )
+        pass_row.addWidget(pass_lbl)
+        pass_row.addWidget(self.pass_edit)
+        pass_row.addWidget(self.chk_show_pass)
+        opt_layout.addLayout(pass_row)
+
         layout.addWidget(opt_card)
 
         # Start button
@@ -155,4 +172,5 @@ class WorkspaceView(QWidget):
         modes = [CompressionMode.BALANCED, CompressionMode.FAST, CompressionMode.MAXIMUM, CompressionMode.RESEARCH]
         mode = modes[mode_idx]
 
-        self.start_compression.emit(self.selected_paths, dest, mode, self.chk_dedup.isChecked())
+        password = self.pass_edit.text().strip() or None
+        self.start_compression.emit(self.selected_paths, dest, mode, self.chk_dedup.isChecked(), password)

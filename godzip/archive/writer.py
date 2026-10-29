@@ -14,12 +14,14 @@ from ..common.constants import (
     FLAG_DEDUP_ENABLED,
     FLAG_ADAPTIVE_SEARCH,
     FLAG_CHECKSUM_BLAKE3,
+    FLAG_ENCRYPTED,
     CompressionMode,
     DEFAULT_CHUNK_SIZE,
 )
 from ..common.types import ArchiveHeader, BlockMetadata, FileEntry, JobProgress
 from ..common.exceptions import JobCancelledError
 from ..integrity.hasher import Hasher
+from ..integrity.crypto import ArchiveCrypto
 from ..integrity.path_guard import sanitize_archive_path
 from ..analyzer.analyzer import ContentAnalyzer
 from ..dedup.chunker import StreamChunker
@@ -43,6 +45,7 @@ class ArchiveWriter:
         mode: CompressionMode = CompressionMode.BALANCED,
         enable_dedup: bool = True,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
+        password: Optional[str] = None,
         progress_callback: Optional[Callable[[JobProgress], None]] = None,
         cancel_check: Optional[Callable[[], bool]] = None,
     ):
@@ -51,6 +54,8 @@ class ArchiveWriter:
         self.mode = mode
         self.enable_dedup = enable_dedup
         self.chunk_size = chunk_size
+        self.password = password
+        self.crypto_key: Optional[bytes] = None
         self.progress_callback = progress_callback
         self.cancel_check = cancel_check
         self.dedup_index = DeduplicationIndex(use_blake3=True)
@@ -95,6 +100,10 @@ class ArchiveWriter:
             # Reserve 32 bytes for header
             out_fp.write(b"\x00" * HEADER_STRUCT.size)
 
+            if self.password:
+                self.crypto_key, auth_header = ArchiveCrypto.generate_auth_header(self.password)
+                out_fp.write(auth_header)
+
             next_block_id = 0
 
             for file_idx, (abs_path, rel_path) in enumerate(file_list):
@@ -133,6 +142,11 @@ class ArchiveWriter:
                             # Compress new block
                             profile = ContentAnalyzer.analyze(chunk)
                             cid, cparam, fid, comp_data = AdaptiveSearchEngine.choose_codec(chunk, profile, self.mode)
+                            
+                            # Apply AES-256-GCM encryption if password-protected
+                            if self.password and self.crypto_key:
+                                comp_data = ArchiveCrypto.encrypt_block(comp_data, self.crypto_key, next_block_id)
+                                
                             comp_len = len(comp_data)
                             offset = out_fp.tell()
                             crc = zlib.crc32(comp_data) & 0xFFFFFFFF
@@ -214,6 +228,8 @@ class ArchiveWriter:
                 flags |= FLAG_DEDUP_ENABLED
             if self.mode in (CompressionMode.BALANCED, CompressionMode.MAXIMUM, CompressionMode.RESEARCH):
                 flags |= FLAG_ADAPTIVE_SEARCH
+            if self.password:
+                flags |= FLAG_ENCRYPTED
 
             header = ArchiveHeader(
                 version=FORMAT_VERSION,
