@@ -378,8 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const procStatus = document.getElementById("procStatus");
   const progressBarFill = document.getElementById("progressBarFill");
   const procPct = document.getElementById("procPct");
-  const chamberGodCrown = document.getElementById("chamberGodCrown");
-  const chamberGodName = document.getElementById("chamberGodName");
   const decreeText = document.getElementById("decreeText");
   const decreeIcon = document.getElementById("decreeIcon");
   const godBlessingText = document.getElementById("godBlessingText");
@@ -550,6 +548,27 @@ document.addEventListener("DOMContentLoaded", () => {
     openWorkspaceWithFiles();
   });
 
+  const btnSelectFolder = document.getElementById("btnSelectFolder");
+  if (btnSelectFolder) {
+    btnSelectFolder.addEventListener("click", (e) => {
+      e.stopPropagation();
+      AudioFX.playClick();
+      folderInput.click();
+    });
+  }
+
+  // Clicking anywhere in dropzone triggers file/folder picker
+  compressDropzone.addEventListener("click", (e) => {
+    if (e.target.closest("button") || e.target.closest("a")) return;
+    AudioFX.playClick();
+    folderInput.click();
+  });
+
+  // Reset input value on click so selecting the same folder again still triggers 'change'
+  folderInput.addEventListener("click", () => {
+    folderInput.value = "";
+  });
+
   folderInput.addEventListener("change", (e) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const rawFiles = Array.from(e.target.files);
@@ -571,6 +590,7 @@ document.addEventListener("DOMContentLoaded", () => {
     workspaceSection.style.display = "block";
     folderTitleName.textContent = currentFolderName;
     filesCountBadge.textContent = `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'}`;
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     fileCardsList.innerHTML = "";
     selectedFiles.slice(0, 50).forEach((file, idx) => {
@@ -839,6 +859,16 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       extractDropzone.classList.remove("dragover");
     });
+  });
+
+  extractDropzone.addEventListener("click", (e) => {
+    if (e.target.closest("button") || e.target.closest("a")) return;
+    AudioFX.playClick();
+    archiveInput.click();
+  });
+
+  archiveInput.addEventListener("click", () => {
+    archiveInput.value = "";
   });
 
   extractDropzone.addEventListener("drop", (e) => {
