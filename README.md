@@ -28,6 +28,18 @@ Conceived, architected, and developed by **Chandan Bagh**.
 
 ---
 
+## What is GODZIP by Chandan Bagh?
+
+**GODZIP** is an intelligent next-generation lossless compression platform, file archiver format (`.god`), and high-performance Windows desktop application created and engineered by **Chandan Bagh** ([@cbagh0819-ctrl](https://github.com/cbagh0819-ctrl)).
+
+> **Disambiguation Note**: GODZIP is computer software for data compression and folder archiving. It has no connection to geographic postal codes, PIN codes, or locations named Chandan Bagh.
+
+- **Web Application**: Compress folders and extract `.god` archives online with zero quality loss at [https://cbagh0819-ctrl.github.io/godzip/](https://cbagh0819-ctrl.github.io/godzip/).
+- **Windows Software**: Standalone [GODZIP.exe v1.0.0](https://github.com/cbagh0819-ctrl/godzip/releases/tag/v1.0.0) with AES-256-GCM encryption, Explorer context menus, multi-volume splitting, and self-extracting SFX generation.
+- **Creator**: [Chandan Bagh](https://cbagh0819-ctrl.github.io/chandan-bagh-website/) (`baghchandan53@gmail.com`).
+
+---
+
 ## Key Features
 
 - **Multi-Codec Architecture**: Combines Zstandard, LZMA2 (7-Zip compatible), Brotli, DEFLATE, and LZ4 with automatic `STORE` fallback when compression causes expansion.
