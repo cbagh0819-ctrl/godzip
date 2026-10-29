@@ -242,3 +242,28 @@ def test_multivolume_archive_splitting_lifecycle(temp_dir):
     reader_base = ArchiveReader(archive_base)
     assert len(reader_base.volume_parts) >= 3
     assert reader_base.verify() is True
+
+
+def test_sfx_executable_generation(temp_dir):
+    """Verifies that a valid .god archive can be packaged into an SFX executable."""
+    from godzip.archive.sfx import create_sfx_executable
+    sample_file = os.path.join(temp_dir, "document.txt")
+    with open(sample_file, "wb") as f:
+        f.write(b"GODZIP Standalone SFX Executable Test Payload - Chandan Bagh\n" * 50)
+
+    god_path = os.path.join(temp_dir, "document.god")
+    writer = ArchiveWriter(output_path=god_path)
+    writer.add_sources([sample_file])
+    assert os.path.exists(god_path)
+
+    sfx_exe = os.path.join(temp_dir, "document_extractor.exe")
+    ok, msg = create_sfx_executable(god_path, sfx_exe)
+    assert ok is True
+    assert os.path.exists(sfx_exe)
+    assert os.path.getsize(sfx_exe) > os.path.getsize(god_path)
+
+    # Verify that the embedded GODZIP container magic exists inside the generated .exe
+    with open(sfx_exe, "rb") as ef:
+        exe_bytes = ef.read()
+    assert b"GODZIP\x01\x00" in exe_bytes
+    assert b"GEND" in exe_bytes

@@ -157,6 +157,19 @@ def cmd_shell(args) -> int:
     return 1
 
 
+def cmd_sfx(args) -> int:
+    from godzip.archive.sfx import create_sfx_executable
+    archive = args.archive
+    output = args.output
+    if not output:
+        base = os.path.splitext(archive)[0]
+        output = base + ".exe"
+    print(f"GODZIP: Generating Self-Extracting Executable from '{archive}' -> '{output}'...")
+    ok, msg = create_sfx_executable(archive, output)
+    print(msg)
+    return 0 if ok else 1
+
+
 def main():
     parser = argparse.ArgumentParser(prog="godzip", description="GODZIP Next-Generation Lossless Archiver")
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
@@ -193,6 +206,11 @@ def main():
     p_shell = subparsers.add_parser("shell", help="Manage Windows Explorer context menu integration")
     p_shell.add_argument("action", choices=["register", "unregister", "status"], help="Action to perform")
 
+    # SFX Generator
+    p_sfx = subparsers.add_parser("sfx", help="Create a Self-Extracting Windows Executable (.exe) from a .god archive")
+    p_sfx.add_argument("-a", "--archive", required=True, help="Input .god archive file")
+    p_sfx.add_argument("-o", "--output", default=None, help="Output .exe path (default: <archive>.exe)")
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -211,6 +229,8 @@ def main():
             return cmd_analyze(args)
         elif args.command == "shell":
             return cmd_shell(args)
+        elif args.command == "sfx":
+            return cmd_sfx(args)
     except Exception as e:
         print(f"\nError: {e}", file=sys.stderr)
         return 2

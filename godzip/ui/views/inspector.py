@@ -42,12 +42,18 @@ class InspectorView(QWidget):
         self.btn_extract.setEnabled(False)
         self.btn_extract.clicked.connect(self._on_extract_clicked)
 
+        self.btn_sfx = QPushButton("Export as SFX (.exe)")
+        self.btn_sfx.setProperty("class", "secondary_btn")
+        self.btn_sfx.setEnabled(False)
+        self.btn_sfx.clicked.connect(self._on_sfx_clicked)
+
         self.lbl_path = QLabel("No archive loaded")
         self.lbl_path.setStyleSheet("color: #8e93a6;")
 
         bar.addWidget(self.btn_open)
         bar.addWidget(self.btn_verify)
         bar.addWidget(self.btn_extract)
+        bar.addWidget(self.btn_sfx)
         bar.addWidget(self.lbl_path)
         bar.addStretch()
         layout.addLayout(bar)
@@ -80,6 +86,7 @@ class InspectorView(QWidget):
             self.lbl_path.setText(path)
             self.btn_verify.setEnabled(True)
             self.btn_extract.setEnabled(True)
+            self.btn_sfx.setEnabled(True)
 
             self.sum_files.setText(f"Files: {info['total_files']:,}")
             self.sum_orig.setText(f"Original: {info['original_bytes'] / (1024*1024):.2f} MB")
@@ -142,3 +149,29 @@ class InspectorView(QWidget):
         dest = QFileDialog.getExistingDirectory(self, "Select Destination Directory")
         if dest:
             self.extract_requested.emit(self.current_archive_path, dest, password)
+
+    def _on_sfx_clicked(self):
+        if not self.current_archive_path:
+            return
+        default_name = os.path.splitext(self.current_archive_path)[0] + ".exe"
+        dest_exe, _ = QFileDialog.getSaveFileName(
+            self, "Export Self-Extracting Executable", default_name, filter="Windows Executable (*.exe)"
+        )
+        if not dest_exe:
+            return
+        if not dest_exe.lower().endswith(".exe"):
+            dest_exe += ".exe"
+        try:
+            from ...archive.sfx import create_sfx_executable
+            ok, msg = create_sfx_executable(self.current_archive_path, dest_exe)
+            if ok:
+                QMessageBox.information(
+                    self,
+                    "SFX Export Complete",
+                    f"Self-Extracting executable created successfully!\n\nLocation: {dest_exe}\n\n"
+                    "This executable can be run on any Windows machine to extract your files with zero dependencies."
+                )
+            else:
+                QMessageBox.warning(self, "SFX Export Failed", msg)
+        except Exception as e:
+            QMessageBox.critical(self, "Export Error", str(e))
