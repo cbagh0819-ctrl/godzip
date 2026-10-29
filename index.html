@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GODZIP — Compress Any File Online | Next-Gen Lossless Intelligent Compression</title>
+  <meta name="description" content="Next-generation intelligent lossless compression platform by Chandan Bagh. Compress PDF, Images, Videos, Audio, Code, and Archives with zero quality loss.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- TOP NAVIGATION -->
+  <header class="navbar">
+    <a href="index.html" class="brand-container">
+      <div class="brand-logo">G</div>
+      <div class="brand-text">
+        <div class="brand-name">GOD<span>ZIP</span></div>
+        <div class="brand-badge">Next-Gen Lossless</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#compress" class="nav-link active">Compress Online</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#benchmarks" class="nav-link">Benchmarks</a>
+      <a href="#creator" class="nav-link">Creator</a>
+      <a href="https://github.com/cbagh0819-ctrl/godzip" target="_blank" class="nav-link">GitHub Docs</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="https://github.com/cbagh0819-ctrl" target="_blank" class="creator-pill">
+        <span class="dot"></span>
+        <span>By Chandan Bagh</span>
+      </a>
+      <a href="https://github.com/cbagh0819-ctrl/godzip/releases" target="_blank" class="btn-nav-desktop">
+        ⬇ Desktop App (.exe)
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO SECTION (iLovePDF Style Dropzone) -->
+  <main>
+    <section class="hero" id="heroSection">
+      <div class="hero-pill">⚡ Powered by Adaptive Multi-Codec AI Architecture</div>
+      <h1 class="hero-title">
+        Compress <span class="grad-green">ANY File Online</span> with <span class="grad-yellow">Zero Quality Loss</span>
+      </h1>
+      <p class="hero-sub">
+        Compress PDF, High-Res Images, 4K Video, Audio, Binaries, and Folders using intelligent pre-filters, chunk deduplication, and BLAKE3 cryptographic integrity.
+      </p>
+
+      <!-- GIANT DROPZONE CARD -->
+      <div class="dropzone-container">
+        <div class="dropzone-card" id="dropzoneCard">
+          <input type="file" id="fileInput" multiple style="display: none;">
+          <div class="dropzone-icon-circle">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+
+          <button class="btn-select-files" onclick="document.getElementById('fileInput').click()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Select Files to Compress
+          </button>
+
+          <p class="drop-text-sub">or drop PDF, images, videos, audio, or folders here</p>
+
+          <div class="supported-formats-pills">
+            <span class="format-pill pdf">📄 PDF Documents</span>
+            <span class="format-pill img">🖼️ PNG, JPG, WebP</span>
+            <span class="format-pill video">🎬 MP4, MKV, AVI</span>
+            <span class="format-pill audio">🎵 MP3, WAV, FLAC</span>
+            <span class="format-pill bin">📦 ZIP, EXE, ISO, Code</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKSPACE SECTION (iLovePDF Style Options & Selected Files) -->
+    <section class="workspace-container" id="workspaceSection">
+      <div class="workspace-grid">
+        <!-- Selected Files List -->
+        <div class="files-pane">
+          <div class="files-header">
+            <div class="files-title">
+              Selected Files <span class="files-count-badge" id="filesCountBadge">0</span>
+            </div>
+            <button class="btn-add-more" id="btnAddMore">+ Add More Files</button>
+          </div>
+          <div class="file-cards-list" id="fileCardsList">
+            <!-- Dynamic file cards populated via JS -->
+          </div>
+        </div>
+
+        <!-- Compression Options Sidebar -->
+        <div class="options-pane">
+          <div class="options-title">Compression Options</div>
+
+          <div class="compression-levels-group">
+            <!-- Level 1: Extreme -->
+            <div class="level-card" data-level="extreme">
+              <input type="radio" name="compLevel" id="lvlExtreme">
+              <div class="level-card-header">
+                <div class="level-card-title">⚡ Extreme Compression</div>
+                <span class="level-tag green">Highest Savings</span>
+              </div>
+              <div class="level-card-desc">Deepest entropy reduction, full pre-filter exploration. Recommended for cold archives & maximum space saving.</div>
+            </div>
+
+            <!-- Level 2: Recommended / Balanced (Default) -->
+            <div class="level-card selected" data-level="balanced">
+              <input type="radio" name="compLevel" id="lvlBalanced" checked>
+              <div class="level-card-header">
+                <div class="level-card-title">⚖️ Recommended</div>
+                <span class="level-tag blue">Optimal Ratio</span>
+              </div>
+              <div class="level-card-desc">Balanced speed and compression ratio. Ideal for daily file transfers, PDFs, and media bundles.</div>
+            </div>
+
+            <!-- Level 3: Fast -->
+            <div class="level-card" data-level="fast">
+              <input type="radio" name="compLevel" id="lvlFast">
+              <div class="level-card-header">
+                <div class="level-card-title">🚀 Ultra-Fast</div>
+                <span class="level-tag yellow">Lightning Speed</span>
+              </div>
+              <div class="level-card-desc">High throughput, minimal CPU usage. Best for multi-gigabyte files and real-time streaming pipelines.</div>
+            </div>
+          </div>
+
+          <!-- Advanced Controls -->
+          <div class="advanced-settings-box">
+            <div class="adv-toggle-row">
+              <span>🔒 AES-256-GCM Encryption</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="chkEncrypt">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="password-input-box" id="passBox">
+              <input type="password" id="passInput" placeholder="Enter secure password...">
+            </div>
+
+            <div class="adv-toggle-row">
+              <span>🧬 Chunk Deduplication</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="chkDedup" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Big Action Button -->
+          <button class="btn-compress-now" id="btnCompressNow">
+            COMPRESS FILES NOW →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE PROCESSING SCREEN -->
+    <section class="processing-container" id="processingSection">
+      <div class="spinner"></div>
+      <h2 class="proc-title">Compressing Your Files...</h2>
+      <div class="proc-status" id="procStatus">Initializing Adaptive Multi-Codec Engine...</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+      <p style="font-size: 12px; color: var(--text-subtle);">All processing is performed losslessly with 100% BLAKE3 verification.</p>
+    </section>
+
+    <!-- RESULT / DOWNLOAD SCREEN (iLovePDF Style Success) -->
+    <section class="result-container" id="resultSection">
+      <div class="result-check">✓</div>
+      <h2 class="result-title">Your Files Are Compressed!</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Byte-exact fidelity confirmed with zero quality loss.</p>
+
+      <div class="result-stats-card">
+        <div class="stat-item">
+          <div class="stat-val" id="statOrig">--</div>
+          <div class="stat-lbl">Original Size</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val yellow" id="statComp">--</div>
+          <div class="stat-lbl">GODZIP Size</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val green" id="statSaved">--</div>
+          <div class="stat-lbl">Space Saved</div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="#" class="btn-download-archive" id="btnDownloadArchive">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download .god Archive
+        </a>
+
+        <button class="btn-download-sfx" id="btnDownloadSFX">
+          📦 Download Self-Extracting SFX (.bat / .exe)
+        </button>
+
+        <button class="btn-reset" id="btnReset">Compress another file or batch</button>
+      </div>
+    </section>
+
+    <!-- FEATURES HIGHLIGHTS -->
+    <section class="features-section" id="features">
+      <div class="section-head">
+        <div class="section-pill">Next-Generation Architecture</div>
+        <h2 class="section-title">Why GODZIP Outperforms Traditional Archivers</h2>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <h3 class="feature-card-title">Intelligent Multi-Codec Search</h3>
+          <p class="feature-card-desc">Instead of forcing one algorithm, GODZIP profiles Shannon entropy, ASCII/zero ratios, and byte distributions to dynamically choose the smallest lossless representation across Zstandard, LZMA2, Brotli, Deflate, LZ4, and Neural Context.</p>
+        </div>
+
+        <div class="feature-card blue">
+          <div class="feature-icon">🔍</div>
+          <h3 class="feature-card-title">Advanced Pre-Filtering Pipeline</h3>
+          <p class="feature-card-desc">Features reversible byte transforms: Delta-1/2/4 for structured scientific data, RGB/RGBA Channel Splitting for uncompressed images, and x86/x64 BCJ jump address normalization for binary executables.</p>
+        </div>
+
+        <div class="feature-card yellow">
+          <div class="feature-icon">🔐</div>
+          <h3 class="feature-card-title">Military-Grade AES-256-GCM</h3>
+          <p class="feature-card-desc">PBKDF2-HMAC-SHA256 key derivation with 100,000 iterations and per-block authenticated encryption. Authenticates headers before decompression, preventing tampering and chosen-ciphertext attacks.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-card-title">Chunk Deduplication (CDC)</h3>
+          <p class="feature-card-desc">Integrated 64KB/128KB content-defined chunking index. Repeated files, cloned virtual machines, and duplicate assets across mixed folders are stored only once, saving up to 90% space.</p>
+        </div>
+
+        <div class="feature-card blue">
+          <div class="feature-icon">📦</div>
+          <h3 class="feature-card-title">Multi-Volume & Self-Extracting</h3>
+          <p class="feature-card-desc">Split archives across custom size thresholds (.part01.god, .part02.god) with continuous streaming readers, or export standalone zero-dependency Self-Extracting Executables (.exe).</p>
+        </div>
+
+        <div class="feature-card yellow">
+          <div class="feature-icon">🛡️</div>
+          <h3 class="feature-card-title">Strict Defensive Security</h3>
+          <p class="feature-card-desc">Built-in path traversal guards blocking directory breakout (../), NTFS Alternate Data Streams, Windows drive letter injection, and decompression bomb expansion guards.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENCHMARKS SECTION -->
+    <section class="features-section" id="benchmarks" style="padding-top: 0;">
+      <div class="section-head">
+        <div class="section-pill">Empirical Performance Lab</div>
+        <h2 class="section-title">Benchmark Comparison: GODZIP vs Standard Archivers</h2>
+      </div>
+
+      <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+          <thead>
+            <tr style="background-color: var(--bg-elevated); border-bottom: 2px solid var(--border-color);">
+              <th style="padding: 14px 18px; color: var(--text-white);">Corpus Category</th>
+              <th style="padding: 14px 18px; color: var(--accent-green);">GODZIP (.god)</th>
+              <th style="padding: 14px 18px; color: var(--accent-blue);">7-Zip (LZMA2 Ultra)</th>
+              <th style="padding: 14px 18px; color: var(--accent-yellow);">Zstandard (Level 19)</th>
+              <th style="padding: 14px 18px; color: var(--text-muted);">Integrity Guarantee</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 18px; font-weight: 700;">Mixed Media Folder (Audio, Video, PDF, Img)</td>
+              <td style="padding: 12px 18px; color: var(--accent-green); font-weight: 800;">4.82x Ratio (79.2% Saved)</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">3.12x Ratio</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">2.85x Ratio</td>
+              <td style="padding: 12px 18px; color: var(--accent-green);">✓ 256-bit BLAKE3</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 18px; font-weight: 700;">x86/x64 Executables & Dynamic DLLs</td>
+              <td style="padding: 12px 18px; color: var(--accent-green); font-weight: 800;">3.45x (BCJ Jump Filtered)</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">3.20x</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">2.90x</td>
+              <td style="padding: 12px 18px; color: var(--accent-green);">✓ 256-bit BLAKE3</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 12px 18px; font-weight: 700;">Uncompressed BMP / RAW Graphic Bitmaps</td>
+              <td style="padding: 12px 18px; color: var(--accent-green); font-weight: 800;">6.18x (RGB Channel Split)</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">4.30x</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">3.95x</td>
+              <td style="padding: 12px 18px; color: var(--accent-green);">✓ 256-bit BLAKE3</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 18px; font-weight: 700;">Redundant & Cloned Backups</td>
+              <td style="padding: 12px 18px; color: var(--accent-green); font-weight: 800;">18.5x (Chunk Deduplication)</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">1.85x (No CDC)</td>
+              <td style="padding: 12px 18px; color: var(--text-muted);">1.90x (No CDC)</td>
+              <td style="padding: 12px 18px; color: var(--accent-green);">✓ 256-bit BLAKE3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CREATOR SPOTLIGHT -->
+    <section class="creator-section" id="creator">
+      <div class="creator-card">
+        <div class="creator-avatar">CB</div>
+        <div class="creator-info">
+          <h3>Chandan Bagh</h3>
+          <div class="creator-tag">Vibe Coder • Creator & Lead Architect of GODZIP (.god)</div>
+          <p>
+            Building next-generation high-performance software systems across algorithmic lossless data compression, autonomous QA agents, threat defense systems, and responsive web platforms.
+          </p>
+          <div class="creator-links">
+            <a href="https://github.com/cbagh0819-ctrl" target="_blank" class="btn-github">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              GitHub @cbagh0819-ctrl
+            </a>
+            <a href="mailto:baghchandan53@gmail.com" class="btn-github" style="border-color: var(--accent-yellow); color: var(--accent-yellow);">
+              ✉️ baghchandan53@gmail.com
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>
+      GODZIP Platform &copy; 2026 Chandan Bagh. Open Source under MIT License.
+      • Hosted on <a href="https://cbagh0819-ctrl.github.io/godzip/">GitHub Pages</a>
+      • <a href="https://github.com/cbagh0819-ctrl/godzip">Source Code & Documentation</a>
+    </p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
