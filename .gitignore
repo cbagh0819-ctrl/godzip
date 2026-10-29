@@ -4,3 +4,7 @@ __pycache__/
 *.tmp.godzip.*
 benchmark/temp/
 benchmark/corpus/
+build/
+dist/
+*.spec
+godzip/assets/sfx_stub.exe

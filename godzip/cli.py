@@ -5,6 +5,7 @@ import sys
 import os
 import time
 from pathlib import Path
+from typing import Optional
 from .common.constants import CompressionMode
 from .common.types import JobProgress
 from .archive.writer import ArchiveWriter
