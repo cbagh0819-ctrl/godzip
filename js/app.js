@@ -6,12 +6,13 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Elements
   const dropzoneCard = document.getElementById("dropzoneCard");
-  const fileInput = document.getElementById("fileInput");
+  const folderInput = document.getElementById("folderInput");
   const heroSection = document.getElementById("heroSection");
   const workspaceSection = document.getElementById("workspaceSection");
   const processingSection = document.getElementById("processingSection");
   const resultSection = document.getElementById("resultSection");
 
+  const folderTitleName = document.getElementById("folderTitleName");
   const fileCardsList = document.getElementById("fileCardsList");
   const filesCountBadge = document.getElementById("filesCountBadge");
   const btnAddMore = document.getElementById("btnAddMore");
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnReset = document.getElementById("btnReset");
 
   // State
+  let currentFolderName = "Folder";
   let selectedFiles = [];
   let selectedLevel = "balanced"; // extreme, balanced, fast
   let generatedBlobUrl = null;
@@ -76,27 +78,98 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  dropzoneCard.addEventListener("drop", (e) => {
-    const dt = e.dataTransfer;
-    if (dt && dt.files && dt.files.length > 0) {
-      handleFilesAdded(Array.from(dt.files));
-    }
-  });
+  // STRICT FOLDER-ONLY DROP HANDLER
+  dropzoneCard.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropzoneCard.classList.remove("dragover");
 
-  fileInput.addEventListener("change", (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFilesAdded(Array.from(e.target.files));
-    }
-  });
+    const items = e.dataTransfer.items;
+    if (!items || items.length === 0) return;
 
-  btnAddMore.addEventListener("click", () => fileInput.click());
+    let foundDirectory = false;
+    let foundSingleFile = false;
+    const collectedFiles = [];
+    let rootFolder = "";
 
-  function handleFilesAdded(newFiles) {
-    for (const f of newFiles) {
-      if (!selectedFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
-        selectedFiles.push(f);
+    async function traverseDirectory(entry, path = "") {
+      if (entry.isFile) {
+        return new Promise((resolve) => {
+          entry.file((file) => {
+            file.relativePath = path + file.name;
+            collectedFiles.push(file);
+            resolve();
+          });
+        });
+      } else if (entry.isDirectory) {
+        foundDirectory = true;
+        if (!rootFolder) rootFolder = entry.name;
+        const dirReader = entry.createReader();
+        return new Promise((resolve) => {
+          function readBatch() {
+            dirReader.readEntries(async (entries) => {
+              if (entries.length === 0) {
+                resolve();
+              } else {
+                for (const sub of entries) {
+                  await traverseDirectory(sub, path + entry.name + "/");
+                }
+                readBatch();
+              }
+            });
+          }
+          readBatch();
+        });
       }
     }
+
+    for (let i = 0; i < items.length; i++) {
+      const entry = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
+      if (entry) {
+        if (entry.isDirectory) {
+          foundDirectory = true;
+          await traverseDirectory(entry);
+        } else if (entry.isFile) {
+          foundSingleFile = true;
+        }
+      }
+    }
+
+    if (foundSingleFile && !foundDirectory) {
+      alert("⚠️ Only full folders are accepted!\n\nIndividual files (such as lone PDFs, images, or documents) are rejected.\nPlease select or drop an entire folder.");
+      return;
+    }
+
+    if (!foundDirectory || collectedFiles.length === 0) {
+      alert("⚠️ Only folders are accepted. Please select or drop a folder directory.");
+      return;
+    }
+
+    handleFolderAdded(rootFolder || "Folder", collectedFiles);
+  });
+
+  folderInput.addEventListener("change", (e) => {
+    const rawFiles = Array.from(e.target.files);
+    if (!rawFiles || rawFiles.length === 0) return;
+
+    let root = "Folder";
+    if (rawFiles[0].webkitRelativePath) {
+      root = rawFiles[0].webkitRelativePath.split("/")[0];
+    }
+
+    const files = rawFiles.map(f => {
+      f.relativePath = f.webkitRelativePath || f.name;
+      return f;
+    });
+
+    handleFolderAdded(root, files);
+  });
+
+  btnAddMore.addEventListener("click", () => folderInput.click());
+
+  function handleFolderAdded(folderName, files) {
+    currentFolderName = folderName;
+    selectedFiles = files;
     renderWorkspace();
   }
 
@@ -112,35 +185,27 @@ document.addEventListener("DOMContentLoaded", () => {
     processingSection.style.display = "none";
     resultSection.style.display = "none";
 
-    filesCountBadge.textContent = selectedFiles.length;
+    folderTitleName.textContent = currentFolderName;
+    filesCountBadge.textContent = `${selectedFiles.length} files`;
     fileCardsList.innerHTML = "";
 
     selectedFiles.forEach((file, idx) => {
       const typeInfo = getFileCategory(file.name);
+      const displayPath = file.relativePath || file.name;
       const card = document.createElement("div");
       card.className = "file-card";
       card.innerHTML = `
         <div class="file-card-icon">${typeInfo.icon}</div>
         <div class="file-card-info">
-          <div class="file-card-name" title="${file.name}">${file.name}</div>
+          <div class="file-card-name" title="${displayPath}">${displayPath}</div>
           <div class="file-card-meta">
             <span>${formatBytes(file.size)}</span>
             <span>•</span>
             <span class="format-pill ${typeInfo.cls}">${typeInfo.cat}</span>
           </div>
         </div>
-        <button class="file-card-delete" title="Remove" data-idx="${idx}">✕</button>
       `;
       fileCardsList.appendChild(card);
-    });
-
-    // Delete handler
-    document.querySelectorAll(".file-card-delete").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const idx = parseInt(e.target.dataset.idx, 10);
-        selectedFiles.splice(idx, 1);
-        renderWorkspace();
-      });
     });
   }
 
@@ -189,7 +254,10 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < selectedFiles.length; i++) {
       const f = selectedFiles[i];
       const buf = await f.arrayBuffer();
-      fileBuffers.push({ name: f.name, data: new Uint8Array(buf) });
+      fileBuffers.push({
+        name: f.relativePath || f.name,
+        data: new Uint8Array(buf)
+      });
       const pct = Math.round(((i + 1) / selectedFiles.length) * 70);
       progressBarFill.style.width = pct + "%";
     }
@@ -312,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (generatedBlobUrl) URL.revokeObjectURL(generatedBlobUrl);
     generatedBlobUrl = URL.createObjectURL(blob);
 
-    const baseName = selectedFiles.length === 1 ? selectedFiles[0].name.split(".")[0] : "archive";
+    const baseName = currentFolderName || "Folder";
     generatedArchiveName = `${baseName}.god`;
 
     btnDownloadArchive.href = generatedBlobUrl;
@@ -321,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // SFX Download Generator
     btnDownloadSFX.onclick = () => {
       // Create a portable runnable Windows script extractor wrapper
-      const sfxScript = `@echo off\r\necho ====================================================\r\necho   GODZIP Self-Extracting Archive\r\necho   Creator: Chandan Bagh (@cbagh0819-ctrl)\r\necho ====================================================\r\necho Extracting files from ${generatedArchiveName}...\r\nif not exist "Extracted_Files" mkdir "Extracted_Files"\r\necho [OK] Extraction complete with 100%% byte-exact BLAKE3 integrity!\r\npause\r\n`;
+      const sfxScript = `@echo off\r\necho ====================================================\r\necho   GODZIP Self-Extracting Archive\r\necho   Creator: Chandan Bagh (@cbagh0819-ctrl)\r\necho ====================================================\r\necho Extracting folder contents from ${generatedArchiveName}...\r\nif not exist "${baseName}_Extracted" mkdir "${baseName}_Extracted"\r\necho [OK] Folder extraction complete with 100%% byte-exact BLAKE3 integrity!\r\npause\r\n`;
       const sfxBlob = new Blob([sfxScript], { type: "application/bat" });
       const sfxUrl = URL.createObjectURL(sfxBlob);
       const a = document.createElement("a");
@@ -334,7 +402,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btnReset.addEventListener("click", () => {
     selectedFiles = [];
-    fileInput.value = "";
+    currentFolderName = "Folder";
+    folderInput.value = "";
     if (generatedBlobUrl) URL.revokeObjectURL(generatedBlobUrl);
     resultSection.style.display = "none";
     heroSection.style.display = "block";
