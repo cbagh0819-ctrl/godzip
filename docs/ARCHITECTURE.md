@@ -1,5 +1,8 @@
 # GODZIP Architecture Specification
 
+**Lead Architect & Creator:** Chandan Bagh (<baghchandan53@gmail.com> | GitHub: [@cbagh0819-ctrl](https://github.com/cbagh0819-ctrl))  
+**Copyright:** (c) 2026 Chandan Bagh under the MIT License
+
 ## 1. System Overview
 
 **GODZIP** is an intelligent, modular, lossless file compression platform for Windows x64. The platform addresses fundamental limitations in traditional static archivers by coupling multi-codec streaming, content-defined deduplication, lightweight data characterization (entropy, byte distributions, file magic), and an adaptive search engine that selects optimal compression representations based on empirical measurements rather than naive heuristics.

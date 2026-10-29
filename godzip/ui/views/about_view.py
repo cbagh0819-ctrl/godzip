@@ -39,6 +39,8 @@ class AboutView(QWidget):
         # Hardware & OS Diagnostics
         mem = psutil.virtual_memory()
         info_lines = [
+            f"<b>Architect & Creator:</b> Chandan Bagh (<a href='https://github.com/cbagh0819-ctrl' style='color: #e63946;'>@cbagh0819-ctrl</a>)",
+            f"<b>Contact:</b> baghchandan53@gmail.com",
             f"<b>Platform:</b> {platform.platform()} ({platform.machine()})",
             f"<b>Python Runtime:</b> {sys.version.split()[0]} (64-bit)",
             f"<b>Logical CPUs:</b> {psutil.cpu_count(logical=True)} | <b>Physical Cores:</b> {psutil.cpu_count(logical=False)}",
@@ -75,10 +77,10 @@ class AboutView(QWidget):
         lic_layout.addWidget(lic_title)
 
         lic_text = (
-            "GODZIP is open-source software under the MIT License.\n"
-            "Includes Zstandard (BSD/GPLv2), Brotli (MIT), LZMA2 (LGPL), LZ4 (BSD), "
+            "GODZIP Architecture & Container Format (c) 2026 Chandan Bagh under the MIT License.\n"
+            "Third-Party Engines: Zstandard (BSD/GPLv2), Brotli (MIT), LZMA2 (LGPL), LZ4 (BSD), "
             "BLAKE3 (Apache 2.0/CC0), and PySide6 / Qt 6 (LGPLv3).\n"
-            "Honest scientific benchmarking: never claims compression ratios without reproducible empirical evidence."
+            "Honest scientific benchmarking: reports measured empirical compression ratios with byte-exact verification."
         )
         lic_lbl = QLabel(lic_text)
         lic_lbl.setStyleSheet("color: #7b8094; font-size: 11px;")

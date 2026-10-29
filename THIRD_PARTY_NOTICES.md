@@ -1,6 +1,13 @@
-# Third-Party Notices & Licenses
+# Third-Party Notices & Intellectual Property
 
-GODZIP incorporates or interfaces with the following open-source projects:
+**GODZIP Architecture, Container Specification (.god v1.0), Pre-Filter Pipeline, and Desktop Application**  
+Copyright (c) 2026 Chandan Bagh <baghchandan53@gmail.com> (GitHub: @cbagh0819-ctrl). Distributed under the MIT License.
+
+---
+
+## Third-Party Libraries & Dependencies
+
+GODZIP interfaces with the following open-source projects:
 
 ### 1. Zstandard (zstd)
 - **License**: BSD 3-Clause / GPLv2
