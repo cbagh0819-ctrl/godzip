@@ -178,6 +178,81 @@ body {
   margin: 0 auto;
 }
 
+/* MODE SWITCHER TABS (COMPRESS FOLDER vs EXTRACT ARCHIVE) */
+.mode-switcher-container {
+  display: inline-flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 6px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  gap: 6px;
+}
+
+.mode-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.mode-tab-btn:hover {
+  color: var(--text-white);
+  background: var(--bg-elevated);
+}
+
+.mode-tab-btn.active {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: #000;
+  font-weight: 800;
+  box-shadow: 0 2px 12px var(--accent-green-glow);
+}
+
+.mode-tab-btn.extract.active {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+  color: #fff;
+  box-shadow: 0 2px 12px var(--accent-blue-glow);
+}
+
+.dropzone-card.extract-theme {
+  border-color: var(--accent-blue);
+}
+
+.dropzone-card.extract-theme:hover, .dropzone-card.extract-theme.dragover {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 32px var(--accent-blue-glow);
+}
+
+.btn-select-archive {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark));
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 18px 48px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 24px var(--accent-blue-glow);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.btn-select-archive:hover {
+  filter: brightness(1.15);
+  transform: scale(1.03);
+}
+
 .hero-pill {
   display: inline-flex;
   align-items: center;

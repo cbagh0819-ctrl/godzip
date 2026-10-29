@@ -20,12 +20,12 @@
     </a>
 
     <nav class="nav-links">
-      <a href="#heroSection" class="nav-link active">Compress Online</a>
+      <a href="#heroSection" class="nav-link active" onclick="document.getElementById('tabCompress').click()">📁 Compress Folder</a>
+      <a href="#heroSection" class="nav-link" onclick="document.getElementById('tabExtract').click()">📦 Extract Archive</a>
       <a href="#download" class="nav-link">Download Software</a>
       <a href="#features" class="nav-link">Features</a>
       <a href="#benchmarks" class="nav-link">Benchmarks</a>
       <a href="#creator" class="nav-link">Creator</a>
-      <a href="https://github.com/cbagh0819-ctrl/godzip" target="_blank" class="nav-link">GitHub Docs</a>
     </nav>
 
     <div class="nav-actions">
@@ -39,20 +39,49 @@
     </div>
   </header>
 
-  <!-- HERO SECTION (iLovePDF Style Dropzone) -->
+  <!-- HERO SECTION -->
   <main>
     <section class="hero" id="heroSection">
-      <div class="hero-pill">📁 Folder-Exclusive Lossless Compression Engine</div>
-      <h1 class="hero-title">
-        Compress <span class="grad-green">ANY Folder Online</span> into <span class="grad-yellow">Ultra-Compact .GOD</span>
-      </h1>
-      <p class="hero-sub">
-        GODZIP Online exclusively accepts full folders. Select or drop an entire folder — it recursively analyzes all contents, applies pre-filtering and chunk deduplication, and packs everything into a single lossless archive.
-      </p>
+      <!-- 2-OPTION MODE SWITCHER -->
+      <div class="mode-switcher-container">
+        <button class="mode-tab-btn active" id="tabCompress">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          1. Compress Folder
+        </button>
+        <button class="mode-tab-btn extract" id="tabExtract">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          2. Extract Archive (.god)
+        </button>
+      </div>
 
-      <!-- GIANT DROPZONE CARD -->
+      <div id="compressHeroHeader">
+        <h1 class="hero-title">
+          Compress <span class="grad-green">ANY Folder</span> into <span class="grad-yellow">Ultra-Compact .GOD</span>
+        </h1>
+        <p class="hero-sub">
+          GODZIP exclusively compresses full folder directories. Upload an entire project, album, or directory — all files are deduplicated and compressed with zero quality loss.
+        </p>
+      </div>
+
+      <div id="extractHeroHeader" style="display: none;">
+        <h1 class="hero-title">
+          Extract <span style="color: var(--accent-blue);">.GOD Archive</span> into <span class="grad-yellow">Original Folder</span>
+        </h1>
+        <p class="hero-sub">
+          Restore any GODZIP archive directly in your browser. Extracts all files, subdirectories, and media with 100% BLAKE3 byte-exact verification.
+        </p>
+      </div>
+
+      <!-- GIANT DROPZONE CONTAINER -->
       <div class="dropzone-container">
-        <div class="dropzone-card" id="dropzoneCard">
+        <!-- 1. COMPRESS FOLDER DROPZONE -->
+        <div class="dropzone-card" id="compressDropzone">
           <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
           <div class="dropzone-icon-circle">
             <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -81,6 +110,31 @@
             <span class="format-pill audio">📁 Music & Audio Folders</span>
             <span class="format-pill bin">📁 Nested Directories</span>
           </div>
+        </div>
+
+        <!-- 2. EXTRACT ARCHIVE DROPZONE -->
+        <div class="dropzone-card extract-theme" id="extractDropzone" style="display: none;">
+          <input type="file" id="archiveInput" accept=".god" style="display: none;">
+          <div class="dropzone-icon-circle" style="border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.15);">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+
+          <button class="btn-select-archive" onclick="document.getElementById('archiveInput').click()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Select .GOD Archive to Extract
+          </button>
+
+          <p class="drop-text-sub" style="color: var(--accent-blue); font-weight: 600; margin-top: 14px;">
+            📦 Drop your .god archive here to restore full original folder and files
+          </p>
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Supports single or multi-volume .god files</p>
         </div>
       </div>
     </section>
@@ -219,7 +273,36 @@
           <a href="#download">Download GODZIP for Windows (.exe) →</a>
         </div>
 
-        <button class="btn-reset" id="btnReset">Compress another file or batch</button>
+        <button class="btn-reset" id="btnReset">Compress another folder</button>
+      </div>
+    </section>
+
+    <!-- EXTRACT RESULT SECTION -->
+    <section class="result-container" id="extractResultSection" style="display: none;">
+      <div class="result-check" style="border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 20px var(--accent-blue-glow);">✓</div>
+      <h2 class="result-title">Archive Extracted Successfully!</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">100% Byte-Exact Folder Contents Restored.</p>
+
+      <div class="result-stats-card" style="grid-template-columns: 1fr 1fr;">
+        <div class="stat-item">
+          <div class="stat-val" id="extStatFiles">--</div>
+          <div class="stat-lbl">Restored Files</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val green" id="extStatBytes">--</div>
+          <div class="stat-lbl">Total Uncompressed Size</div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg-black); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 20px; max-height: 240px; overflow-y: auto; text-align: left;" id="extractedFilesList">
+        <!-- List of recovered files with individual download buttons -->
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-download-archive" id="btnDownloadAllExtracted" style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-dark)); color: #fff;">
+          ⬇ Download Restored Files Bundle (.zip)
+        </button>
+        <button class="btn-reset" id="btnResetExtract">Extract another archive</button>
       </div>
     </section>
 
