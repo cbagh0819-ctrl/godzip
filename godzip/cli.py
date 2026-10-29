@@ -117,12 +117,30 @@ def cmd_analyze(args) -> int:
     return 0
 
 
+def cmd_shell(args) -> int:
+    from godzip.platform import windows_shell
+    action = args.action
+    if action == "register":
+        ok, msg = windows_shell.register_shell_integration()
+        print(msg)
+        return 0 if ok else 1
+    elif action == "unregister":
+        ok, msg = windows_shell.unregister_shell_integration()
+        print(msg)
+        return 0 if ok else 1
+    elif action == "status":
+        reg = windows_shell.is_registered()
+        print(f"Windows Explorer Context Menu: {'REGISTERED (Active)' if reg else 'NOT REGISTERED'}")
+        return 0
+    return 1
+
+
 def main():
     parser = argparse.ArgumentParser(prog="godzip", description="GODZIP Next-Generation Lossless Archiver")
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
 
-    # Create
-    p_create = subparsers.add_parser("create", help="Create a .god archive")
+    # Create / Compress
+    p_create = subparsers.add_parser("create", aliases=["compress"], help="Create a .god archive")
     p_create.add_argument("-i", "--input", nargs="+", required=True, help="Input files or directories")
     p_create.add_argument("-o", "--output", required=True, help="Destination .god file")
     p_create.add_argument("-m", "--mode", default="balanced", choices=["fast", "balanced", "max", "research"], help="Compression mode")
@@ -148,13 +166,17 @@ def main():
     p_analyze = subparsers.add_parser("analyze", help="Analyze data profile of a file")
     p_analyze.add_argument("path", help="File to analyze")
 
+    # Shell Integration
+    p_shell = subparsers.add_parser("shell", help="Manage Windows Explorer context menu integration")
+    p_shell.add_argument("action", choices=["register", "unregister", "status"], help="Action to perform")
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
         return 1
 
     try:
-        if args.command == "create":
+        if args.command in ("create", "compress"):
             return cmd_create(args)
         elif args.command == "extract":
             return cmd_extract(args)
@@ -164,6 +186,8 @@ def main():
             return cmd_verify(args)
         elif args.command == "analyze":
             return cmd_analyze(args)
+        elif args.command == "shell":
+            return cmd_shell(args)
     except Exception as e:
         print(f"\nError: {e}", file=sys.stderr)
         return 2

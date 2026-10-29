@@ -75,6 +75,40 @@ class SettingsView(QWidget):
 
         layout.addWidget(card)
 
+        # Windows Explorer Shell Integration Card
+        shell_card = QFrame()
+        shell_card.setProperty("class", "card")
+        sc_layout = QVBoxLayout(shell_card)
+        sc_layout.setSpacing(10)
+
+        shell_title = QLabel("Windows Explorer Integration")
+        shell_title.setProperty("class", "card_title")
+        sc_layout.addWidget(shell_title)
+
+        shell_desc = QLabel(
+            "Add 'Compress with GODZIP' and 'Extract with GODZIP' to your Windows right-click context menu "
+            "and associate the .god file extension with GODZIP."
+        )
+        shell_desc.setStyleSheet("color: #a0a6b8; font-size: 12px;")
+        shell_desc.setWordWrap(True)
+        sc_layout.addWidget(shell_desc)
+
+        shell_row = QHBoxLayout()
+        self.lbl_shell_status = QLabel("Status: Checking...")
+        self.lbl_shell_status.setStyleSheet("font-weight: 600; font-size: 13px;")
+
+        self.btn_shell_toggle = QPushButton("Toggle Shell Integration")
+        self.btn_shell_toggle.setProperty("class", "secondary_btn")
+        self.btn_shell_toggle.clicked.connect(self._toggle_shell_integration)
+
+        shell_row.addWidget(self.lbl_shell_status)
+        shell_row.addStretch()
+        shell_row.addWidget(self.btn_shell_toggle)
+        sc_layout.addLayout(shell_row)
+
+        layout.addWidget(shell_card)
+        self._refresh_shell_status()
+
         # Save button
         btn_save = QPushButton("Save Settings")
         btn_save.setProperty("class", "primary_btn")
@@ -83,6 +117,40 @@ class SettingsView(QWidget):
         layout.addWidget(btn_save)
 
         layout.addStretch()
+
+    def _refresh_shell_status(self):
+        try:
+            from ...platform import windows_shell
+            reg = windows_shell.is_registered()
+            if reg:
+                self.lbl_shell_status.setText("Status: Active (Right-click menu enabled)")
+                self.lbl_shell_status.setStyleSheet("color: #2ec4b6; font-weight: 600; font-size: 13px;")
+                self.btn_shell_toggle.setText("Disable Explorer Integration")
+            else:
+                self.lbl_shell_status.setText("Status: Not Enabled")
+                self.lbl_shell_status.setStyleSheet("color: #a0a6b8; font-weight: 600; font-size: 13px;")
+                self.btn_shell_toggle.setText("Enable Explorer Integration")
+        except Exception as e:
+            self.lbl_shell_status.setText(f"Status: Unavailable ({e})")
+
+    def _toggle_shell_integration(self):
+        try:
+            from ...platform import windows_shell
+            if windows_shell.is_registered():
+                ok, msg = windows_shell.unregister_shell_integration()
+                if ok:
+                    QMessageBox.information(self, "Windows Shell Integration", "Context menu and file associations removed.")
+                else:
+                    QMessageBox.warning(self, "Integration Warning", msg)
+            else:
+                ok, msg = windows_shell.register_shell_integration()
+                if ok:
+                    QMessageBox.information(self, "Windows Shell Integration", "Context menu and .god file associations registered successfully!")
+                else:
+                    QMessageBox.warning(self, "Integration Warning", msg)
+            self._refresh_shell_status()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to modify shell integration: {e}")
 
     def _browse_temp(self):
         d = QFileDialog.getExistingDirectory(self, "Select Temporary Folder")

@@ -1,0 +1,51 @@
+Windows Registry Editor Version 5.00
+
+; GODZIP Windows Explorer Context Menu & File Association
+; Author: Chandan Bagh (baghchandan53@gmail.com, GitHub: @cbagh0819-ctrl)
+
+; 1. Right-click any file -> Compress with GODZIP
+[HKEY_CURRENT_USER\Software\Classes\*\shell\GODZIP.Compress]
+@="Compress with GODZIP"
+
+[HKEY_CURRENT_USER\Software\Classes\*\shell\GODZIP.Compress\command]
+@="python.exe -m godzip.cli create -i \"%1\" -o \"%1.god\""
+
+; 2. Right-click any directory -> Compress with GODZIP
+[HKEY_CURRENT_USER\Software\Classes\Directory\shell\GODZIP.Compress]
+@="Compress with GODZIP"
+
+[HKEY_CURRENT_USER\Software\Classes\Directory\shell\GODZIP.Compress\command]
+@="python.exe -m godzip.cli create -i \"%1\" -o \"%1.god\""
+
+; 3. Associate .god files with GODZIP.Archive
+[HKEY_CURRENT_USER\Software\Classes\.god]
+@="GODZIP.Archive"
+"Content Type"="application/x-godzip"
+
+; 4. GODZIP.Archive Actions
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive]
+@="GODZIP Compressed Archive"
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\open]
+@="Open in GODZIP"
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\open\command]
+@="pythonw.exe -m godzip.ui.app \"%1\""
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\extract]
+@="Extract to folder"
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\extract\command]
+@="python.exe -m godzip.cli extract -a \"%1\" -o \"%1_extracted\""
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\extract_here]
+@="Extract Here"
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\extract_here\command]
+@="python.exe -m godzip.cli extract -a \"%1\" -o \".\""
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\verify]
+@="Verify Archive Integrity"
+
+[HKEY_CURRENT_USER\Software\Classes\GODZIP.Archive\shell\verify\command]
+@="python.exe -m godzip.cli verify -a \"%1\""

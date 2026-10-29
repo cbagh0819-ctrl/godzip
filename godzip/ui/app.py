@@ -42,6 +42,19 @@ class MainWindow(QMainWindow):
         self.job_bridge.error.connect(self._on_job_error)
 
         self._init_ui()
+        self._handle_cli_args()
+
+    def _handle_cli_args(self):
+        if len(sys.argv) > 1:
+            arg = sys.argv[1].strip('"')
+            if os.path.exists(arg):
+                if arg.lower().endswith(".god"):
+                    self.switch_page(3)
+                    self.view_inspector.edit_path.setText(os.path.abspath(arg))
+                    self.view_inspector._inspect()
+                else:
+                    self.switch_page(1)
+                    self.view_workspace.add_paths([os.path.abspath(arg)])
 
     def _init_ui(self):
         central_widget = QWidget()

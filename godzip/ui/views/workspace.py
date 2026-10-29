@@ -148,6 +148,14 @@ class WorkspaceView(QWidget):
         self.selected_paths.clear()
         self.list_widget.clear()
 
+    def add_paths(self, paths: list[str]):
+        """Add input paths programmatically (e.g. from command line or Explorer)."""
+        for p in paths:
+            if p not in self.selected_paths:
+                self.selected_paths.append(p)
+                self.list_widget.addItem(p)
+        self._auto_populate_dest()
+
     def _auto_populate_dest(self):
         if not self.dest_edit.text() and self.selected_paths:
             first = self.selected_paths[0]
