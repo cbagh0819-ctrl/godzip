@@ -1,8 +1,16 @@
 # GODZIP
 
-**Next-Generation Intelligent Lossless Compression Platform for Windows**
+[![Web Platform](https://img.shields.io/badge/Official%20Web%20App-Live%20Online-00c853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://cbagh0819-ctrl.github.io/godzip/)
+[![Download Release](https://img.shields.io/badge/Download-GODZIP.exe%20v1.0.0-ffd600?style=for-the-badge&logo=windows&logoColor=black)](https://github.com/cbagh0819-ctrl/godzip/releases/tag/v1.0.0)
+[![Portfolio](https://img.shields.io/badge/Author%20Portfolio-Chandan%20Bagh-2979ff?style=for-the-badge&logo=github)](https://cbagh0819-ctrl.github.io/chandan-bagh-website/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-white.svg?style=for-the-badge)](LICENSE)
 
-GODZIP (`.god`) is a modular, high-compression lossless archiver and Windows desktop application. Instead of applying one compression algorithm blindly across all files, GODZIP uses statistical content analysis (Shannon entropy, byte distributions, magic signatures), block deduplication, and an **Adaptive Search Engine** to select the optimal codec for every chunk of data.
+**Next-Generation Intelligent Lossless Compression Platform for Web & Windows**
+
+> **Official Online Platform**: [https://cbagh0819-ctrl.github.io/godzip/](https://cbagh0819-ctrl.github.io/godzip/)  
+> **Standalone Windows Software**: [Download GODZIP.exe v1.0.0](https://github.com/cbagh0819-ctrl/godzip/releases/download/v1.0.0/GODZIP.exe)
+
+GODZIP (`.god`) is a modular, high-compression lossless archiver and modern platform. Instead of applying one compression algorithm blindly across all files, GODZIP uses statistical content analysis (Shannon entropy, byte distributions, magic signatures), block deduplication, AES-256-GCM authenticated encryption, and an **Adaptive Search Engine** to select the optimal codec for every chunk of data.
 
 Conceived, architected, and developed by **Chandan Bagh**.
 
@@ -11,9 +19,11 @@ Conceived, architected, and developed by **Chandan Bagh**.
 ## Author & Project Credits
 
 - **Creator & Lead Architect**: Chandan Bagh
-- **GitHub**: [@cbagh0819-ctrl](https://github.com/cbagh0819-ctrl)
+- **Official Web Platform**: [https://cbagh0819-ctrl.github.io/godzip/](https://cbagh0819-ctrl.github.io/godzip/)
+- **Author Portfolio**: [https://cbagh0819-ctrl.github.io/chandan-bagh-website/](https://cbagh0819-ctrl.github.io/chandan-bagh-website/)
+- **GitHub Profile**: [@cbagh0819-ctrl](https://github.com/cbagh0819-ctrl)
 - **Contact Email**: [baghchandan53@gmail.com](mailto:baghchandan53@gmail.com)
-- **Project Repository**: [https://github.com/cbagh0819-ctrl/GODZIP](https://github.com/cbagh0819-ctrl/GODZIP)
+- **Project Repository**: [https://github.com/cbagh0819-ctrl/godzip](https://github.com/cbagh0819-ctrl/godzip)
 - **License**: MIT License (c) 2026 Chandan Bagh
 
 ---
@@ -53,7 +63,12 @@ Conceived, architected, and developed by **Chandan Bagh**.
 | Qt 6 Windows Desktop GUI | **Completed** | Dark theme, 7 responsive tabs, live monitor |
 | 14-Category Benchmark Corpus Generator | **Completed** | Repeatable synthetic & legal corpus |
 | Nacrith / CMIX / OmniZip Research Adapters | **Completed** | Documented research evaluation modules |
-| AES-256-GCM Archive Encryption | *Planned v1.1* | Container flag bit reserved |
+| AES-256-GCM Archive Encryption | **Completed** | PBKDF2 (100k iter SHA-256) + AES-GCM 128-bit tag |
+| Windows Explorer Context Menu | **Completed** | Right-click "Compress with GODZIP" (.reg & PowerShell) |
+| Multi-Volume Archive Splitting | **Completed** | Split across `.part01.god`, `.part02.god`, etc. |
+| Self-Extracting Executables (SFX) | **Completed** | Standalone Windows `.exe` auto-extractor stub |
+| Standalone Windows Desktop Packager | **Completed** | Portable `GODZIP.exe` binary in GitHub Releases |
+| Web Platform (iLovePDF Style) | **Completed** | Folder compression & `.god` extractor on GitHub Pages |
 
 ---
 

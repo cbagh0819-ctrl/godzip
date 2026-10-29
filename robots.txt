@@ -1,0 +1,7 @@
+# Robots.txt for GODZIP Official Website
+# Author: Chandan Bagh (baghchandan53@gmail.com, GitHub: @cbagh0819-ctrl)
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cbagh0819-ctrl.github.io/godzip/sitemap.xml
