@@ -10,7 +10,7 @@ from ...common.constants import CompressionMode
 
 
 class WorkspaceView(QWidget):
-    start_compression = Signal(list, str, object, bool, str) # files, output_path, mode, dedup, password
+    start_compression = Signal(list, str, object, bool, str, object) # files, output_path, mode, dedup, password, split_size
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -119,6 +119,21 @@ class WorkspaceView(QWidget):
         pass_row.addWidget(self.chk_show_pass)
         opt_layout.addLayout(pass_row)
 
+        # Volume Splitting Row
+        split_row = QHBoxLayout()
+        split_lbl = QLabel("Volume Splitting:")
+        split_lbl.setFixedWidth(120)
+        self.combo_split = QComboBox()
+        self.combo_split.addItem("None (Single Archive File)", None)
+        self.combo_split.addItem("10 MB (Small Files)", 10 * 1024 * 1024)
+        self.combo_split.addItem("50 MB (Cloud / Email)", 50 * 1024 * 1024)
+        self.combo_split.addItem("100 MB (Standard Web)", 100 * 1024 * 1024)
+        self.combo_split.addItem("700 MB (CD-ROM)", 700 * 1024 * 1024)
+        self.combo_split.addItem("4.7 GB (DVD)", int(4.7 * 1024 * 1024 * 1024))
+        split_row.addWidget(split_lbl)
+        split_row.addWidget(self.combo_split)
+        opt_layout.addLayout(split_row)
+
         layout.addWidget(opt_card)
 
         # Start button
@@ -181,4 +196,5 @@ class WorkspaceView(QWidget):
         mode = modes[mode_idx]
 
         password = self.pass_edit.text().strip() or None
-        self.start_compression.emit(self.selected_paths, dest, mode, self.chk_dedup.isChecked(), password)
+        split_size = self.combo_split.currentData()
+        self.start_compression.emit(self.selected_paths, dest, mode, self.chk_dedup.isChecked(), password, split_size)

@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
             if dest:
                 self._start_extraction_job(path, dest, password)
 
-    def _start_compression_job(self, source_paths: list, output_path: str, mode: CompressionMode, enable_dedup: bool, password: str = None):
+    def _start_compression_job(self, source_paths: list, output_path: str, mode: CompressionMode, enable_dedup: bool, password: str = None, split_size: int = None):
         try:
             self.job_controller.start_compression(
                 source_paths=source_paths,
@@ -173,6 +173,7 @@ class MainWindow(QMainWindow):
                 mode=mode,
                 enable_dedup=enable_dedup,
                 password=password,
+                split_size=split_size,
                 on_progress=lambda p: self.job_bridge.progress.emit(p),
                 on_complete=lambda res: self.job_bridge.completed.emit(res),
                 on_error=lambda err: self.job_bridge.error.emit(err),

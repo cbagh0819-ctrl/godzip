@@ -34,6 +34,7 @@ from .format import (
     serialize_block_table,
     serialize_file_table,
 )
+from .multivolume import MultiVolumeWriter
 
 
 class ArchiveWriter:
@@ -46,15 +47,16 @@ class ArchiveWriter:
         enable_dedup: bool = True,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         password: Optional[str] = None,
+        split_size: Optional[int] = None,
         progress_callback: Optional[Callable[[JobProgress], None]] = None,
         cancel_check: Optional[Callable[[], bool]] = None,
     ):
         self.output_path = os.path.abspath(output_path)
-        self.temp_output_path = self.output_path + f".tmp.godzip.{os.getpid()}"
         self.mode = mode
         self.enable_dedup = enable_dedup
         self.chunk_size = chunk_size
         self.password = password
+        self.split_size = split_size
         self.crypto_key: Optional[bytes] = None
         self.progress_callback = progress_callback
         self.cancel_check = cancel_check
@@ -87,7 +89,7 @@ class ArchiveWriter:
         total_files = len(file_list)
         total_original_bytes = sum(os.path.getsize(p[0]) for p in file_list)
 
-        os.makedirs(os.path.dirname(self.temp_output_path), exist_ok=True)
+        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
 
         blocks: List[BlockMetadata] = []
         files: List[FileEntry] = []
@@ -96,21 +98,21 @@ class ArchiveWriter:
         start_time = time.time()
         last_callback_time = 0.0
 
-        with open(self.temp_output_path, "wb") as out_fp:
+        mv_writer = MultiVolumeWriter(self.output_path, split_size=self.split_size)
+
+        try:
             # Reserve 32 bytes for header
-            out_fp.write(b"\x00" * HEADER_STRUCT.size)
+            mv_writer.write(b"\x00" * HEADER_STRUCT.size)
 
             if self.password:
                 self.crypto_key, auth_header = ArchiveCrypto.generate_auth_header(self.password)
-                out_fp.write(auth_header)
+                mv_writer.write(auth_header)
 
             next_block_id = 0
 
             for file_idx, (abs_path, rel_path) in enumerate(file_list):
                 if self.cancel_check and self.cancel_check():
-                    out_fp.close()
-                    if os.path.exists(self.temp_output_path):
-                        os.remove(self.temp_output_path)
+                    mv_writer.cleanup_temps()
                     raise JobCancelledError("Archive creation cancelled by user")
 
                 clean_path = sanitize_archive_path(rel_path)
@@ -123,9 +125,7 @@ class ArchiveWriter:
                 with open(abs_path, "rb") as in_fp:
                     for chunk in self.chunker.chunk_stream(in_fp):
                         if self.cancel_check and self.cancel_check():
-                            out_fp.close()
-                            if os.path.exists(self.temp_output_path):
-                                os.remove(self.temp_output_path)
+                            mv_writer.cleanup_temps()
                             raise JobCancelledError("Archive creation cancelled by user")
 
                         chunk_len = len(chunk)
@@ -148,10 +148,10 @@ class ArchiveWriter:
                                 comp_data = ArchiveCrypto.encrypt_block(comp_data, self.crypto_key, next_block_id)
                                 
                             comp_len = len(comp_data)
-                            offset = out_fp.tell()
+                            offset = mv_writer.tell()
                             crc = zlib.crc32(comp_data) & 0xFFFFFFFF
 
-                            out_fp.write(comp_data)
+                            mv_writer.write(comp_data)
                             compressed_bytes_written += comp_len
                             file_comp_size += comp_len
 
@@ -206,21 +206,21 @@ class ArchiveWriter:
                 ))
 
             # Write Block Table
-            block_table_offset = out_fp.tell()
+            block_table_offset = mv_writer.tell()
             block_table_bytes = serialize_block_table(blocks)
-            out_fp.write(block_table_bytes)
+            mv_writer.write(block_table_bytes)
 
             # Write File Table
-            file_table_offset = out_fp.tell()
+            file_table_offset = mv_writer.tell()
             file_table_bytes = serialize_file_table(files)
-            out_fp.write(file_table_bytes)
+            mv_writer.write(file_table_bytes)
 
             # Calculate catalog CRC32
             catalog_crc = zlib.crc32(block_table_bytes + file_table_bytes) & 0xFFFFFFFF
 
             # Write Footer (24 bytes)
             footer_bytes = FOOTER_STRUCT.pack(block_table_offset, file_table_offset, catalog_crc, MAGIC_TRAILER)
-            out_fp.write(footer_bytes)
+            mv_writer.write(footer_bytes)
 
             # Write finalized Header at offset 0
             flags = FLAG_CHECKSUM_BLAKE3
@@ -238,13 +238,13 @@ class ArchiveWriter:
                 file_table_offset=file_table_offset,
                 header_crc=0
             )
-            out_fp.seek(0)
-            out_fp.write(serialize_header(header))
+            mv_writer.seek(0)
+            mv_writer.write(serialize_header(header))
 
-        # Atomic commit
-        if os.path.exists(self.output_path):
-            os.remove(self.output_path)
-        shutil.move(self.temp_output_path, self.output_path)
+            final_files = mv_writer.commit()
+            final_size = sum(os.path.getsize(f) for f in final_files)
+            return total_original_bytes, final_size
 
-        final_size = os.path.getsize(self.output_path)
-        return total_original_bytes, final_size
+        except Exception:
+            mv_writer.cleanup_temps()
+            raise

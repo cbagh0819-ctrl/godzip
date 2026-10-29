@@ -21,6 +21,25 @@ def _print_progress(p: JobProgress) -> None:
     sys.stdout.flush()
 
 
+def parse_size_str(val: Optional[str]) -> Optional[int]:
+    if not val:
+        return None
+    s = val.strip().upper()
+    try:
+        if s.endswith("GB") or s.endswith("G"):
+            num = s.rstrip("GB")
+            return int(float(num) * 1024 * 1024 * 1024)
+        elif s.endswith("MB") or s.endswith("M"):
+            num = s.rstrip("MB")
+            return int(float(num) * 1024 * 1024)
+        elif s.endswith("KB") or s.endswith("K"):
+            num = s.rstrip("KB")
+            return int(float(num) * 1024)
+        return int(s)
+    except ValueError:
+        raise ValueError(f"Invalid volume split size format: '{val}' (use e.g. 50M, 100M, 1G)")
+
+
 def cmd_create(args) -> int:
     inputs = args.input
     output = args.output
@@ -31,7 +50,9 @@ def cmd_create(args) -> int:
         "research": CompressionMode.RESEARCH,
     }
     mode = mode_map.get(args.mode.lower(), CompressionMode.BALANCED)
-    print(f"GODZIP: Creating archive '{output}' (Mode: {mode.value.upper()}, Dedup: {not args.no_dedup})...")
+    split_size = parse_size_str(getattr(args, "split", None))
+    split_desc = f", Split: {args.split}" if split_size else ""
+    print(f"GODZIP: Creating archive '{output}' (Mode: {mode.value.upper()}, Dedup: {not args.no_dedup}{split_desc})...")
     
     start_time = time.time()
     writer = ArchiveWriter(
@@ -39,6 +60,7 @@ def cmd_create(args) -> int:
         mode=mode,
         enable_dedup=not args.no_dedup,
         password=args.password,
+        split_size=split_size,
         progress_callback=_print_progress,
     )
     orig_bytes, comp_bytes = writer.add_sources(inputs)
@@ -146,6 +168,7 @@ def main():
     p_create.add_argument("-m", "--mode", default="balanced", choices=["fast", "balanced", "max", "research"], help="Compression mode")
     p_create.add_argument("--no-dedup", action="store_true", help="Disable deduplication")
     p_create.add_argument("-p", "--password", default=None, help="Encrypt archive with AES-256-GCM password")
+    p_create.add_argument("-s", "--split", default=None, help="Split archive into multi-volume parts (e.g. 50M, 100M, 700M, 1G)")
 
     # Extract
     p_extract = subparsers.add_parser("extract", help="Extract a .god archive")

@@ -34,6 +34,7 @@ from .format import (
     deserialize_block_table,
     deserialize_file_table,
 )
+from .multivolume import find_volume_parts, MultiVolumeStream
 
 
 class ArchiveReader:
@@ -41,7 +42,8 @@ class ArchiveReader:
 
     def __init__(self, archive_path: str, password: Optional[str] = None):
         self.archive_path = os.path.abspath(archive_path)
-        if not os.path.exists(self.archive_path):
+        self.volume_parts = find_volume_parts(self.archive_path)
+        if not self.volume_parts:
             raise FileNotFoundError(f"Archive not found: {self.archive_path}")
 
         self.password = password
@@ -52,12 +54,15 @@ class ArchiveReader:
         self.files: List[FileEntry] = []
         self._load_catalog()
 
-    def _load_catalog(self) -> None:
-        file_size = os.path.getsize(self.archive_path)
-        if file_size < HEADER_STRUCT.size + FOOTER_STRUCT.size:
-            raise CorruptArchiveError("Archive file is smaller than container overhead")
+    def _open_stream(self) -> MultiVolumeStream:
+        return MultiVolumeStream(self.volume_parts)
 
-        with open(self.archive_path, "rb") as fp:
+    def _load_catalog(self) -> None:
+        with self._open_stream() as fp:
+            file_size = fp.total_size
+            if file_size < HEADER_STRUCT.size + FOOTER_STRUCT.size:
+                raise CorruptArchiveError("Archive file is smaller than container overhead")
+
             # 1. Read header
             header_data = fp.read(HEADER_STRUCT.size)
             self.header = deserialize_header(header_data)
@@ -135,7 +140,7 @@ class ArchiveReader:
         bytes_checked = 0
         start_time = time.time()
 
-        with open(self.archive_path, "rb") as fp:
+        with self._open_stream() as fp:
             if self.header.flags & FLAG_ENCRYPTED:
                 if not self.crypto_key:
                     if not self.password:
@@ -221,7 +226,7 @@ class ArchiveReader:
         bytes_written = 0
         start_time = time.time()
 
-        with open(self.archive_path, "rb") as fp:
+        with self._open_stream() as fp:
             if self.header.flags & FLAG_ENCRYPTED:
                 if not self.crypto_key:
                     if not self.password:

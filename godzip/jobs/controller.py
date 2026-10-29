@@ -55,6 +55,7 @@ class JobController:
         mode: CompressionMode = CompressionMode.BALANCED,
         enable_dedup: bool = True,
         password: Optional[str] = None,
+        split_size: Optional[int] = None,
         on_progress: Optional[Callable[[JobProgress], None]] = None,
         on_complete: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_error: Optional[Callable[[str], None]] = None,
@@ -80,6 +81,7 @@ class JobController:
                     mode=mode,
                     enable_dedup=enable_dedup,
                     password=password,
+                    split_size=split_size,
                     progress_callback=progress_handler,
                     cancel_check=self._cancel_check,
                 )

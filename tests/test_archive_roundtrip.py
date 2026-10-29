@@ -196,3 +196,49 @@ def test_encrypted_archive_lifecycle(temp_dir):
     assert os.path.exists(recovered)
     with open(recovered, "rb") as rf:
         assert rf.read() == secret_data
+
+
+def test_multivolume_archive_splitting_lifecycle(temp_dir):
+    """Verifies multi-volume archive splitting, part discovery, and byte-exact extraction."""
+    large_file = os.path.join(temp_dir, "bigdata.bin")
+    # 100 KB random payload to test splitting across multiple volumes
+    payload = os.urandom(100 * 1024)
+    with open(large_file, "wb") as f:
+        f.write(payload)
+
+    archive_base = os.path.join(temp_dir, "dataset.god")
+    split_size = 35 * 1024  # 35 KB per volume
+
+    writer = ArchiveWriter(
+        output_path=archive_base,
+        mode=CompressionMode.FAST,
+        split_size=split_size
+    )
+    writer.add_sources([large_file])
+
+    # Check part files exist
+    part1 = os.path.join(temp_dir, "dataset.part01.god")
+    part2 = os.path.join(temp_dir, "dataset.part02.god")
+    part3 = os.path.join(temp_dir, "dataset.part03.god")
+    assert os.path.exists(part1), "dataset.part01.god was not created"
+    assert os.path.exists(part2), "dataset.part02.god was not created"
+    assert os.path.exists(part3), "dataset.part03.god was not created"
+    assert os.path.getsize(part1) <= split_size
+
+    # 1. Read archive pointing to part01
+    reader = ArchiveReader(part1)
+    assert len(reader.volume_parts) >= 3
+    assert reader.verify() is True
+
+    extract_dir = os.path.join(temp_dir, "extracted_split")
+    reader.extract(extract_dir)
+
+    recovered = os.path.join(extract_dir, "bigdata.bin")
+    assert os.path.exists(recovered)
+    with open(recovered, "rb") as rf:
+        assert rf.read() == payload
+
+    # 2. Read archive pointing to base name (auto-discovers part01, part02...)
+    reader_base = ArchiveReader(archive_base)
+    assert len(reader_base.volume_parts) >= 3
+    assert reader_base.verify() is True
