@@ -122,6 +122,8 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- LIGHTWEIGHT CINEMATIC CELESTIAL CANVAS -->
+  <canvas id="celestialCanvas" class="celestial-canvas"></canvas>
 
   <!-- TOP NAVIGATION -->
   <header class="navbar">
@@ -129,7 +131,7 @@
       <div class="brand-logo">G</div>
       <div class="brand-text">
         <div class="brand-name">GOD<span>ZIP</span></div>
-        <div class="brand-badge">Next-Gen Lossless</div>
+        <div class="brand-badge">Celestial Lossless</div>
       </div>
     </a>
 
@@ -143,6 +145,12 @@
     </nav>
 
     <div class="nav-actions">
+      <!-- CINEMATIC AUDIO SYNTHESIZER TOGGLE -->
+      <button id="btnSoundToggle" class="btn-sound-toggle" title="Toggle Celestial Sound FX">
+        <span class="sound-icon" id="soundIcon">🔊</span>
+        <span class="sound-label" id="soundLabel">Audio: ON</span>
+      </button>
+
       <a href="https://github.com/cbagh0819-ctrl" target="_blank" class="creator-pill">
         <span class="dot"></span>
         <span>By Chandan Bagh</span>
@@ -190,6 +198,67 @@
         <p class="hero-sub">
           Restore any GODZIP archive directly in your browser. Extracts all files, subdirectories, and media with 100% BLAKE3 byte-exact verification.
         </p>
+      </div>
+
+      <!-- PANTHEON OF COMPRESSION GODS SELECTOR -->
+      <div class="pantheon-bar" id="pantheonBar">
+        <div class="pantheon-header">
+          <span class="pantheon-spark">✨</span>
+          <span class="pantheon-title">SUMMON THY COMPRESSION DEITY</span>
+          <span class="pantheon-spark">✨</span>
+        </div>
+        <div class="pantheon-grid">
+          <button class="pantheon-card active" data-god="zeus" type="button">
+            <span class="god-badge-icon">⚡</span>
+            <div class="god-card-info">
+              <span class="god-card-name">ZEUS</span>
+              <span class="god-card-domain">Lightning Strike • Ultra-Fast</span>
+            </div>
+            <span class="god-card-active-glow"></span>
+          </button>
+          <button class="pantheon-card" data-god="chronos" type="button">
+            <span class="god-badge-icon">🌌</span>
+            <div class="god-card-info">
+              <span class="god-card-name">CHRONOS</span>
+              <span class="god-card-domain">Cosmic Singularity • Maximum Ratio</span>
+            </div>
+            <span class="god-card-active-glow"></span>
+          </button>
+          <button class="pantheon-card" data-god="hermes" type="button">
+            <span class="god-badge-icon">🪽</span>
+            <div class="god-card-info">
+              <span class="god-card-name">HERMES</span>
+              <span class="god-card-domain">Astral Stream • Balanced</span>
+            </div>
+            <span class="god-card-active-glow"></span>
+          </button>
+          <button class="pantheon-card" data-god="ares" type="button">
+            <span class="god-badge-icon">🛡️</span>
+            <div class="god-card-info">
+              <span class="god-card-name">ARES</span>
+              <span class="god-card-domain">Aegis Fortress • AES-256 Encrypted</span>
+            </div>
+            <span class="god-card-active-glow"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CELESTIAL GOD DECREE & INTERACTIVE AVATAR -->
+      <div class="god-altar-stage" id="godAltarStage">
+        <div class="divine-aura-ring"></div>
+        <div class="god-avatar-display" id="godAvatar">
+          <div class="god-crown" id="godCrown">⚡</div>
+          <div class="god-face">
+            <div class="god-eye left-eye"></div>
+            <div class="god-eye right-eye"></div>
+          </div>
+          <div class="god-aura-flame"></div>
+        </div>
+        <div class="god-decree-box" id="godDecreeBox">
+          <p class="decree-speech" id="decreeSpeech">
+            &ldquo;Mortal, entrust thy folder unto Zeus. We shall strike thy bytes with 1.21 gigawatts of celestial lossless compression.&rdquo;
+          </p>
+        </div>
       </div>
 
       <!-- GIANT DROPZONE CONTAINER -->
@@ -336,22 +405,81 @@
       </div>
     </section>
 
-    <!-- LIVE PROCESSING SCREEN -->
+    <!-- CINEMATIC GOD COMPRESSION CHAMBER -->
     <section class="processing-container" id="processingSection">
-      <div class="spinner"></div>
-      <h2 class="proc-title">Compressing Your Files...</h2>
-      <div class="proc-status" id="procStatus">Initializing Adaptive Multi-Codec Engine...</div>
-      <div class="progress-bar-wrap">
+      <!-- Colossal Gods Crushing Folders Arena -->
+      <div class="divine-compression-chamber" id="chamberStage">
+        <div class="chamber-celestial-bg"></div>
+        <div class="chamber-runes-ring"></div>
+        
+        <!-- Divine Deity Presence Above -->
+        <div class="chamber-god-figure" id="chamberDeityFigure">
+          <div class="chamber-god-halo"></div>
+          <div class="chamber-god-crown" id="chamberGodCrown">⚡</div>
+          <div class="chamber-god-name" id="chamberGodName">ZEUS THE THUNDERER</div>
+        </div>
+
+        <!-- The Compression Arena: Hands Crushing Floating Folder -->
+        <div class="crushing-arena">
+          <!-- Colossal Left Hand -->
+          <div class="god-hand left-hand" id="godHandLeft">
+            <div class="hand-palm">🖐️</div>
+            <div class="hand-plasma-charge left-charge"></div>
+          </div>
+
+          <!-- Levitating Folder Under Divine Gravitational Pressure -->
+          <div class="crushing-folder-target" id="crushingFolderTarget">
+            <div class="cosmic-singularity-vortex" id="chamberVortex"></div>
+            <div class="folder-avatar" id="folderAvatar">📁</div>
+            <div class="folder-data-cubes" id="dataCubes">
+              <span class="cube c1">📄</span>
+              <span class="cube c2">🖼️</span>
+              <span class="cube c3">🎬</span>
+              <span class="cube c4">🎵</span>
+              <span class="cube c5">📦</span>
+            </div>
+            <div class="compression-shockwave" id="compressionShockwave"></div>
+          </div>
+
+          <!-- Colossal Right Hand -->
+          <div class="god-hand right-hand" id="godHandRight">
+            <div class="hand-palm mirror">🖐️</div>
+            <div class="hand-plasma-charge right-charge"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divine-decree-display" id="divineChamberDecree">
+        <span class="decree-icon" id="decreeIcon">⚡</span>
+        <span id="decreeText">Zeus is applying celestial compression voltage to folder blocks...</span>
+      </div>
+
+      <div class="progress-bar-wrap divine-bar">
         <div class="progress-bar-fill" id="progressBarFill"></div>
       </div>
-      <p style="font-size: 12px; color: var(--text-subtle);">All processing is performed losslessly with 100% BLAKE3 verification.</p>
+      <div class="proc-pct-display" id="procPct">0%</div>
+
+      <div class="proc-status" id="procStatus">Initializing Adaptive Multi-Codec Engine...</div>
+      <p style="font-size: 12px; color: var(--text-subtle); margin-top: 8px;">100% Lossless • Zero Artifacts • Cryptographic BLAKE3 Verification</p>
     </section>
 
-    <!-- RESULT / DOWNLOAD SCREEN (iLovePDF Style Success) -->
+    <!-- RESULT / DOWNLOAD SCREEN (Divine Relic Revealed) -->
     <section class="result-container" id="resultSection">
-      <div class="result-check">✓</div>
-      <h2 class="result-title">Your Files Are Compressed!</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">Byte-exact fidelity confirmed with zero quality loss.</p>
+      <div class="divine-relic-altar">
+        <div class="relic-light-burst"></div>
+        <div class="divine-god-relic">
+          <div class="relic-gem">
+            <span class="relic-icon">✦</span>
+            <span class="relic-title">.GOD</span>
+          </div>
+          <div class="relic-sparkles"></div>
+        </div>
+      </div>
+
+      <h2 class="result-title">Divine Lossless Compression Complete!</h2>
+      <p style="color: var(--accent-yellow); font-size: 15px; font-weight: 700; margin-bottom: 24px;" id="godBlessingText">
+        ⚡ The Gods have condensed your folder into an ultra-dense .GOD relic!
+      </p>
 
       <div class="result-stats-card">
         <div class="stat-item">
